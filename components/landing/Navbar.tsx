@@ -7,7 +7,7 @@ import { Bars3Icon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { inter } from "@/app/ui/fonts";
 import Image from "next/image";
-
+import Link from "next/link";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -37,10 +37,10 @@ export default function Navbar() {
                 <NavigationMenuLink href="#layanan" className="text-violet-700 font-medium px-3 py-4 text-base">Layanan</NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Button variant="outline" className="border-2 border-violet-600 text-violet-700 hover:text-violet-700 px-3 py-4 mr-1 text-base">Masuk</Button>
+                <Link href="/login" className="box-border border-2 border-violet-600 text-violet-700 hover:bg-gray-100 rounded-sm font-medium px-3 py-2 text-base mx-2">Masuk</Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Button className="bg-violet-600 hover:bg-violet-700 text-white px-3 py-4 text-base">Daftar</Button>
+                <Link href="/register" className="border-2 border-violet-600 bg-violet-600 hover:bg-violet-700 rounded-sm text-white font-medium px-3 py-2 text-base">Daftar</Link>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
