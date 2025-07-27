@@ -1,9 +1,21 @@
-import Image from "next/image";
+import Navbar from "@/components/landing/Navbar";
+import HeroSection from "@/components/landing/HeroSection";
+import TentangKami from "@/components/landing/TentangKami";
+import BukuSection from "@/components/landing/BukuSection"; 
+import LayananSection from "@/components/landing/LayananSection";
+import Footer from "@/components/landing/Footer";
+import Faq from "@/components/landing/Faq";
 
 export default function Home() {
   return (
-    <div>
-      <h1>Home page</h1>
-    </div>
+    <>  
+      <Navbar />
+      <HeroSection />
+      <TentangKami />
+      <BukuSection />
+      <LayananSection />
+      <Faq />
+      <Footer />
+    </>
   );
 }

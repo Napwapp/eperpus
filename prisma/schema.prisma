@@ -13,3 +13,41 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum Role {
+  user
+  admin
+  superadmin
+}
+
+enum Gender {
+  laki_laki
+  perempuan
+  tidak_memilih
+}
+
+model users {
+  id           String     @id @default(cuid())
+  name         String
+  email        String     @unique
+  password     String?
+  nomorHp      String?
+  alamat       String?
+  verified_at  DateTime?
+  role         Role       @default(user)
+  gender       Gender     @default(tidak_memilih)
+  otps         otps[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model otps {
+  id        String   @id @default(cuid())
+  code      String
+  expired   DateTime
+  userId    String
+  user      users    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
