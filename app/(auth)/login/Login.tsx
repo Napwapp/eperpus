@@ -1,88 +1,188 @@
-import Link from "next/link";
-import React from "react";
+"use client";
+
+import { useRouter, useSearchParams } from "next/navigation";
+import { showAlert } from "@/components/ui/toast";
+import { signIn } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { loginUserSchema } from "@/validations/userSchema";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import BaseAlert from "@/components/ui/base-alert";
 import Image from "next/image";
+import Link from "next/link";
+import LoaderSpinner from "@/components/ui/loader-spinner";
 
 export default function Login() {
-  const InputBox = ({
-    type,
-    placeholder,
-    name,
-  }: {
-    type: string;
-    placeholder: string;
-    name: string;
-  }) => {
-    return (
-      <div className="mb-6">
-        <input
-          type={type}
-          placeholder={placeholder}
-          name={name}
-          className="w-full rounded-md border border-stroke bg-transparent px-5 py-3 text-base text-body-color outline-none focus:border-primary focus-visible:shadow-none dark:border-dark-3 dark:text-white"
-        />
-      </div>
-    );
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showUnauthorizedAlert, setShowUnauthorizedAlert] = useState(false);
+
+  // Pesan localStorage dari Verify
+  useEffect(() => {
+    const message = localStorage.getItem("successMessage");
+    if (message) {
+      showAlert({ message, type: "success" });
+      localStorage.removeItem("successMessage");
+    }
+
+    const queryMessage = searchParams.get("message");
+    if (queryMessage) {
+      showAlert({ message: decodeURIComponent(queryMessage), type: "success" });
+      router.replace("/login");
+    }
+  }, [router, searchParams]);
+
+  // Cek query param unauthorized untuk menampilkan alert jika user belum login
+  useEffect(() => {
+    const isUnauthorized = searchParams.get("unauthorized");
+    if (isUnauthorized && !sessionStorage.getItem("unauthorized-alert-shown")) {
+      setShowUnauthorizedAlert(true);
+      sessionStorage.setItem("unauthorized-alert-shown", "true");
+      router.replace("/login");
+    }
+  }, [router, searchParams]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Validasi frontend
+    try {
+      loginUserSchema.parse({ email, password });
+    } catch (error) {
+      if (error && typeof error === "object" && "errors" in error) {
+        const zodError = error as {
+          errors: Array<{ path: string[]; message: string }>;
+        };
+        if (zodError.errors.length > 0) {
+          showAlert({ message: zodError.errors[0].message, type: "error" });
+        }
+      } else {
+        showAlert({ message: "Terjadi kesalahan validasi", type: "error" });
+      }
+      return;
+    }
+
+    setLoading(true);
+
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if (res?.error) {
+      showAlert({ message: res.error, type: "error" });
+    } else {
+      sessionStorage.removeItem("unauthorized-alert-shown");
+      router.push("/user/home");
+      localStorage.setItem("successMessage", "Berhasil login!");
+    }
+
+    setLoading(false);
   };
 
   return (
-    <section className="bg-gray-1 min-h-screen flex items-center justify-center dark:bg-dark py-8 sm:py-20 lg:py-[120px]">
-      <div className="container mx-auto px-2">
-        <div className="flex justify-center items-center">
-          <div className="w-full">
-            <div className="relative mx-auto w-full max-w-xs sm:max-w-md md:max-w-[525px] overflow-hidden rounded-lg bg-white px-4 sm:px-8 md:px-12 py-10 sm:py-16 dark:bg-dark-2">
-              <div className="mb-10 text-center md:mb-16">
-                <h1 className="text-2xl font-bold text-gray-700 mb-4">
-                  Login ke akun Anda
-                </h1>
-                <div className="flex justify-center items-center flex-row">
-                  <Image
-                    src="/eperpus.svg"
-                    alt="Logo ePerpus"
-                    width={80}
-                    height={80}
-                    className="w-10 h-10 md:w-25 md:h-25 object-contain"
-                    priority
-                  />
-                  <h2 className="text-3xl font-bold text-violet-700">
-                    ePerpus
-                  </h2>
+    <>
+      <BackButton />
+
+      {showUnauthorizedAlert && (
+        <BaseAlert
+          type="error"
+          message="Maaf, Tidak bisa mengakses halaman, kamu belum login"
+          show={showUnauthorizedAlert}
+          onClose={() => {
+            setShowUnauthorizedAlert(false);
+            sessionStorage.removeItem("unauthorized-alert-shown");
+          }}
+          autoClose={true}
+          duration={5000}
+        />
+      )}
+      <section className="bg-gray-1 min-h-screen flex items-center justify-center dark:bg-dark py-8 sm:py-20 lg:py-[120px]">
+        <div className="container mx-auto px-2 relative">
+          <div className="flex justify-center items-center">
+            <div className="w-full">
+              <div className="relative mx-auto w-full max-w-xs sm:max-w-md md:max-w-[525px] overflow-hidden rounded-lg bg-white px-4 sm:px-8 md:px-12 py-10 sm:py-16 dark:bg-dark-2">
+                <div className="mb-10 text-center md:mb-16">
+                  <h1 className="text-2xl font-bold text-gray-700 mb-4">
+                    Login ke akun Anda
+                  </h1>
+                  <div className="flex justify-center items-center flex-row">
+                    <Image
+                      src="/eperpus.svg"
+                      alt="Logo ePerpus"
+                      width={80}
+                      height={80}
+                      className="w-10 h-10 md:w-25 md:h-25 object-contain"
+                      priority
+                    />
+                    <h2 className="text-3xl font-bold text-violet-700">
+                      ePerpus
+                    </h2>
+                  </div>
                 </div>
-              </div>
 
-              <form>
-                <label
-                  htmlFor="email"
-                  className="text-sm font-medium text-gray-600 mb-2"
-                >
-                  Email
-                </label>
-                <InputBox type="email" name="email" placeholder="Email" />
+                <form onSubmit={handleSubmit}>
+                  <label
+                    htmlFor="email"
+                    className="text-sm font-medium text-gray-600 mb-2"
+                  >
+                    Email
+                  </label>
+                  <div className="mb-6">
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="w-full rounded-md border border-stroke bg-transparent px-5 py-3 text-base text-body-color outline-none focus:border-primary dark:border-dark-3 dark:text-white"
+                    />
+                  </div>
 
-                <label
-                  htmlFor="password"
-                  className="text-sm font-medium text-gray-600 mb-2"
-                >
-                  Password
-                </label>
-                <InputBox
-                  type="password"
-                  name="password"
-                  placeholder="Password"
-                />
+                  <label
+                    htmlFor="password"
+                    className="text-sm font-medium text-gray-600 mb-2"
+                  >
+                    Password
+                  </label>
+                  <div className="mb-6">
+                    <input
+                      type="password"
+                      name="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="w-full rounded-md border border-stroke bg-transparent px-5 py-3 text-base text-body-color outline-none focus:border-primary dark:border-dark-3 dark:text-white"
+                    />
+                  </div>
 
-                <div className="mb-5">
-                  <input
-                    type="submit"
-                    value="Sign In"
-                    className="w-full cursor-pointer rounded-md border border-primary bg-primary px-5 py-3 text-base font-medium text-white transition hover:bg-opacity-90"
-                  />
-                </div>
-              </form>
-
-              <p className="mb-6 text-base text-secondary-color dark:text-dark-7 text-center">
+                  <div className="mb-5">
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full cursor-pointer rounded-md border border-primary bg-primary px-5 py-3 text-base font-medium text-white transition hover:bg-opacity-90 disabled:opacity-50"
+                    >
+                      {loading ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <p className="ml-2">Loading</p>
+                          <LoaderSpinner />
+                        </div>
+                      ) : (
+                        "Sign In"
+                      )}
+                    </button>
+                  </div>
+                </form>
+                {/* Belum digunakan, karna belum ada logic nya*/}
+                {/* <p className="mb-6 text-base text-secondary-color dark:text-dark-7 text-center">
                 Atau login dengan
               </p>
-
               <ul className="-mx-2 mb-12 flex justify-between">
                 <li className="w-full px-2">
                   <Link
@@ -103,246 +203,46 @@ export default function Login() {
                     </svg>
                   </Link>
                 </li>
-              </ul>
-              
-              <div className="flex justify-between">
-                <p>
-                  <Link href="/register" className="text-base text-dark hover:text-violet-500">
-                    Belum punya akun? Daftar disini
+              </ul> */}
+                <div className="flex justify-between">
+                  <p>
+                    <Link
+                      href="/register"
+                      className="text-base text-violet-700 hover:text-violet-800 hover:underline hover:underline-offset-6"
+                    >
+                      Belum punya akun? Daftar disini
+                    </Link>
+                  </p>
+
+                  <Link
+                    href="/"
+                    className="mb-2 inline-block text-base text-violet-700 hover:text-violet-800 hover:underline hover:underline-offset-6"
+                  >
+                    Forget Password?
                   </Link>
-                </p>
-                
-                <Link
-                  href="/"
-                  className="mb-2 inline-block text-base text-dark hover:text-violet-500"
-                >
-                  Forget Password?
-                </Link>
-
-              </div>
-
-              <div>
-                <span className="absolute right-1 top-1">
-                  <svg
-                    width="40"
-                    height="40"
-                    viewBox="0 0 40 40"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle
-                      cx="1.39737"
-                      cy="38.6026"
-                      r="1.39737"
-                      transform="rotate(-90 1.39737 38.6026)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="1.39737"
-                      cy="1.99122"
-                      r="1.39737"
-                      transform="rotate(-90 1.39737 1.99122)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="13.6943"
-                      cy="38.6026"
-                      r="1.39737"
-                      transform="rotate(-90 13.6943 38.6026)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="13.6943"
-                      cy="1.99122"
-                      r="1.39737"
-                      transform="rotate(-90 13.6943 1.99122)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="25.9911"
-                      cy="38.6026"
-                      r="1.39737"
-                      transform="rotate(-90 25.9911 38.6026)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="25.9911"
-                      cy="1.99122"
-                      r="1.39737"
-                      transform="rotate(-90 25.9911 1.99122)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="38.288"
-                      cy="38.6026"
-                      r="1.39737"
-                      transform="rotate(-90 38.288 38.6026)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="38.288"
-                      cy="1.99122"
-                      r="1.39737"
-                      transform="rotate(-90 38.288 1.99122)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="1.39737"
-                      cy="26.3057"
-                      r="1.39737"
-                      transform="rotate(-90 1.39737 26.3057)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="13.6943"
-                      cy="26.3057"
-                      r="1.39737"
-                      transform="rotate(-90 13.6943 26.3057)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="25.9911"
-                      cy="26.3057"
-                      r="1.39737"
-                      transform="rotate(-90 25.9911 26.3057)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="38.288"
-                      cy="26.3057"
-                      r="1.39737"
-                      transform="rotate(-90 38.288 26.3057)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="1.39737"
-                      cy="14.0086"
-                      r="1.39737"
-                      transform="rotate(-90 1.39737 14.0086)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="13.6943"
-                      cy="14.0086"
-                      r="1.39737"
-                      transform="rotate(-90 13.6943 14.0086)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="25.9911"
-                      cy="14.0086"
-                      r="1.39737"
-                      transform="rotate(-90 25.9911 14.0086)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="38.288"
-                      cy="14.0086"
-                      r="1.39737"
-                      transform="rotate(-90 38.288 14.0086)"
-                      fill="#3056D3"
-                    />
-                  </svg>
-                </span>
-                <span className="absolute bottom-1 left-1">
-                  <svg
-                    width="29"
-                    height="40"
-                    viewBox="0 0 29 40"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle
-                      cx="2.288"
-                      cy="25.9912"
-                      r="1.39737"
-                      transform="rotate(-90 2.288 25.9912)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="14.5849"
-                      cy="25.9911"
-                      r="1.39737"
-                      transform="rotate(-90 14.5849 25.9911)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="26.7216"
-                      cy="25.9911"
-                      r="1.39737"
-                      transform="rotate(-90 26.7216 25.9911)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="2.288"
-                      cy="13.6944"
-                      r="1.39737"
-                      transform="rotate(-90 2.288 13.6944)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="14.5849"
-                      cy="13.6943"
-                      r="1.39737"
-                      transform="rotate(-90 14.5849 13.6943)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="26.7216"
-                      cy="13.6943"
-                      r="1.39737"
-                      transform="rotate(-90 26.7216 13.6943)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="2.288"
-                      cy="38.0087"
-                      r="1.39737"
-                      transform="rotate(-90 2.288 38.0087)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="2.288"
-                      cy="1.39739"
-                      r="1.39737"
-                      transform="rotate(-90 2.288 1.39739)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="14.5849"
-                      cy="38.0089"
-                      r="1.39737"
-                      transform="rotate(-90 14.5849 38.0089)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="26.7216"
-                      cy="38.0089"
-                      r="1.39737"
-                      transform="rotate(-90 26.7216 38.0089)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="14.5849"
-                      cy="1.39761"
-                      r="1.39737"
-                      transform="rotate(-90 14.5849 1.39761)"
-                      fill="#3056D3"
-                    />
-                    <circle
-                      cx="26.7216"
-                      cy="1.39761"
-                      r="1.39737"
-                      transform="rotate(-90 26.7216 1.39761)"
-                      fill="#3056D3"
-                    />
-                  </svg>
-                </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
+  );
+}
+
+export function BackButton() {
+  return (
+    <div className="absolute top-4 left-4 z-10">
+      <Link href="/">
+        <Button
+          variant="outline"
+          className="outline-violet-700 bg-white text-gray-600 hover:bg-gray-50 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4 text-violet-700" />
+          <span className="hidden sm:inline ml-2">Kembali ke Beranda</span>
+          <span className="sm:hidden ml-2">Kembali</span>
+        </Button>
+      </Link>
+    </div>
   );
 }

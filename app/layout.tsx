@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
-import StoreProvider from "./StoreProvider";
 import { inter } from "./ui/fonts";
+import NextAuthSession from "./NextAuthSession";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -17,10 +17,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
-        <StoreProvider>
+        <NextAuthSession>
           {children}
-          <Toaster position="top-center" reverseOrder={false} />
-        </StoreProvider>
+          <Toaster position="top-right" reverseOrder={false} />
+        </NextAuthSession>
       </body>
     </html>
   );
