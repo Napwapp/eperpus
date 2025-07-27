@@ -52,7 +52,7 @@ export default function EmailVerificationPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/verify-otp", {
+      const res = await fetch(`/api/auth/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code: otpCode }),
@@ -89,7 +89,7 @@ export default function EmailVerificationPage() {
 
   const handleResendOtp = async () => {
     setResendLoading(true);
-    const res = await fetch("/api/auth/send-otp", {
+    const res = await fetch(`/api/auth/send-otp`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
@@ -171,7 +171,7 @@ export default function EmailVerificationPage() {
           <p className="text-white/80 text-base sm:text-lg">
             Masukkan kode 6 digit yang telah dikirim ke
           </p>
-          <p className="text-white font-medium">example@email.com</p>
+          <p className="text-white font-medium">{email}</p>
         </div>
 
         {/* Verification Form */}

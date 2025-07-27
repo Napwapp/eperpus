@@ -33,7 +33,7 @@ export default function Register() {
     async (data: RegisterFormData) => {
       setLoading(true);
       try {
-        const res = await fetch("/api/auth/signup", {
+        const res = await fetch(`/api/auth/signup`, {
           method: "POST",
           body: JSON.stringify(data),
         });
@@ -45,7 +45,7 @@ export default function Register() {
         }
 
         // Panggil send-otp
-        const otpRes = await fetch("/api/auth/send-otp", {
+        const otpRes = await fetch(`/api/auth/send-otp`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: response.email }),

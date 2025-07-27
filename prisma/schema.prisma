@@ -23,6 +23,7 @@ enum Role {
 enum Gender {
   laki_laki
   perempuan
+  tidak_memilih
 }
 
 model users {
@@ -30,11 +31,11 @@ model users {
   name         String
   email        String     @unique
   password     String?
-  nomorHp      String
-  alamat       String
+  nomorHp      String?
+  alamat       String?
   verified_at  DateTime?
   role         Role       @default(user)
-  gender       Gender
+  gender       Gender     @default(tidak_memilih)
   otps         otps[]
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt

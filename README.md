@@ -39,3 +39,6 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 ## Settings .env
 Hubungkan database neon ke projek seperti biasanya. 
 Set bagian email dengan benar supaya bisa mengirimkan OTP. EMAIL_FROM_NAME=nama_email sisanya seperti biasa
+
+## Logout
+Tombol logout pada projek saya bisa dibilang kurang mencolok. Dia berada didalam dropdown pada Sidebarfooter, Sidebarfooter bisa diklik, dan disitu akan menampilkan dropdown yang berisikan beberapa item termasuk Logout.

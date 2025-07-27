@@ -10,10 +10,10 @@ interface BaseAlertProps {
 }
 
 const classNames = {
-  success: "text-center",
-  error: "text-center",
-  info: "text-center",
-  loading: "text-center",
+  success: "text-left",
+  error: "text-left",
+  info: "text-left",
+  loading: "text-left",
   duration: 5000,
 };
 

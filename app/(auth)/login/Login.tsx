@@ -19,6 +19,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
   const [showUnauthorizedAlert, setShowUnauthorizedAlert] = useState(false);
 
   // Pesan localStorage dari Verify
@@ -83,6 +84,23 @@ export default function Login() {
 
     setLoading(false);
   };
+
+  const handleGoogleLogin = async () => {
+
+    setIsLoadingGoogle(true);
+    const res = await signIn("google", {
+      callbackUrl: "/user/home", // arahkan ke dashboard setelah login berhasil
+    });
+    console.log(res, "Google sign-in response");
+    if (res?.error) {
+      showAlert({ message: res.error, type: "error" });
+      setIsLoadingGoogle(false);
+    } else {
+      router.push("/user/home"); // ganti ke halaman tujuanmu
+      setIsLoadingGoogle(false);
+    }
+  };
+
 
   return (
     <>
@@ -179,47 +197,53 @@ export default function Login() {
                     </button>
                   </div>
                 </form>
-                {/* Belum digunakan, karna belum ada logic nya*/}
-                {/* <p className="mb-6 text-base text-secondary-color dark:text-dark-7 text-center">
+
+                <p className="mb-6 text-base text-secondary-color dark:text-dark-7 text-center">
                 Atau login dengan
-              </p>
-              <ul className="-mx-2 mb-12 flex justify-between">
-                <li className="w-full px-2">
-                  <Link
-                    href="/"
-                    className="flex h-11 items-center justify-center rounded-md outline-2 outline-violet-700 hover:bg-gray-100"
-                  >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 18 18"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
+                </p>                                
+
+                <div className="mb-5">
+                    <button
+                      type="button"
+                      onClick={handleGoogleLogin}
+                      className="flex items-center justify-center bg-white w-full cursor-pointer rounded-md border-2 border-primary px-5 py-3 text-base font-medium text-black transition hover:bg-gray-100 disabled:opacity-50"
                     >
-                      <path
-                        d="M17.8477 8.17132H9.29628V10.643H15.4342C15.1065 14.0743 12.2461 15.5574 9.47506 15.5574C5.95916 15.5574 2.8306 12.8821 2.8306 9.01461C2.8306 5.29251 5.81018 2.47185 9.47506 2.47185C12.2759 2.47185 13.9742 4.24567 13.9742 4.24567L15.7024 2.47185C15.7024 2.47185 13.3783 0.000145544 9.35587 0.000145544C4.05223 -0.0289334 0 4.30383 0 8.98553C0 13.5218 3.81386 18 9.44526 18C14.4212 18 17.9967 14.7141 17.9967 9.79974C18.0264 8.78198 17.8477 8.17132 17.8477 8.17132Z"
-                        fill="black"
+                      {/* svg Google */}
+                      <Image
+                        src="/google.svg"
+                        alt="Google"
+                        width={30}
+                        height={30}
+                        className="mr-2"
                       />
-                    </svg>
-                  </Link>
-                </li>
-              </ul> */}
-                <div className="flex justify-between">
+                      {isLoadingGoogle ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <p className="ml-2">Loading</p>
+                          <LoaderSpinner />
+                        </div>
+                      ) : (
+                        "Sign In with Google"
+                      )}
+                    </button>
+                  </div>
+
+                <div className="flex justify-center">
                   <p>
                     <Link
                       href="/register"
-                      className="text-base text-violet-700 hover:text-violet-800 hover:underline hover:underline-offset-6"
+                      className="text-base text-violet-700 hover:text-violet-800 hover:underline hover:underline-offset-4"
                     >
                       Belum punya akun? Daftar disini
                     </Link>
                   </p>
 
-                  <Link
+                  {/* Belum bisa dipakai, karna belum ada logic nya */}                  
+                  {/* <Link
                     href="/"
                     className="mb-2 inline-block text-base text-violet-700 hover:text-violet-800 hover:underline hover:underline-offset-6"
                   >
                     Forget Password?
-                  </Link>
+                  </Link> */}
                 </div>
               </div>
             </div>
