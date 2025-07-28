@@ -227,7 +227,7 @@ export default function Login() {
                     </button>
                   </div>
 
-                <div className="flex justify-center">
+                <div className="flex justify-between">
                   <p>
                     <Link
                       href="/register"
@@ -236,14 +236,13 @@ export default function Login() {
                       Belum punya akun? Daftar disini
                     </Link>
                   </p>
-
-                  {/* Belum bisa dipakai, karna belum ada logic nya */}                  
-                  {/* <Link
-                    href="/"
+                  
+                  <Link
+                    href="/reset-password"
                     className="mb-2 inline-block text-base text-violet-700 hover:text-violet-800 hover:underline hover:underline-offset-6"
                   >
                     Forget Password?
-                  </Link> */}
+                  </Link>
                 </div>
               </div>
             </div>

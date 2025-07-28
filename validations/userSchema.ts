@@ -49,3 +49,26 @@ export const loginUserSchema = z.object({
     .nonempty("Password wajib diisi")
     .min(1, "Password wajib diisi"),
 });
+
+// Schema untuk reset password step 1 (email validation)
+export const resetPasswordEmailSchema = z.object({
+  email: z
+    .string()
+    .nonempty("Email wajib diisi")
+    .email("Format email tidak valid")
+    .regex(/@gmail\.com$/, "Email harus menggunakan domain @gmail.com"),
+});
+
+// Schema untuk reset password step 2 (new password)
+export const resetPasswordNewPasswordSchema = z.object({
+  newPassword: z
+    .string()
+    .min(8, "Password minimal 8 karakter")
+    .max(25, "Password maksimal 25 karakter"),
+  confirmPassword: z
+    .string()
+    .nonempty("Konfirmasi password wajib diisi"),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Konfirmasi password tidak cocok",
+  path: ["confirmPassword"],
+});
