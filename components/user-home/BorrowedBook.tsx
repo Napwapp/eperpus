@@ -22,7 +22,6 @@ export default function BorrowedBook({
   title,
   author,
   cover,
-  borrowedDate,
   dueDate,
   daysLeft,
   onExtend,
