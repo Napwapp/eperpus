@@ -1,12 +1,11 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import {useEffect } from "react";
 import { showAlert } from "@/components/ui/toast";
 import { useSession } from "next-auth/react";
 import Header from "@/components/user-home/Header";
 import InformationCards from "@/components/user-home/InformationCards";
 import BorrowedBooks from "@/components/user-home/BorrowedBooks";
-import FastAction from "@/components/user-home/FastAction";
 import BooksRecomendations from "@/components/user-home/BooksRecomendations";
 
 export default function HomePage() {
