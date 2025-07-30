@@ -16,5 +16,10 @@ export const links = [
       url: "/user/profile",
       icon: User,
     },
+    {
+      title: "Pinjaman",
+      url: "/user/pinjaman",
+      icon: BookOpen,
+    }
   ]
   

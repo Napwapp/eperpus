@@ -75,7 +75,7 @@ export default function BooksRecomendations() {
       {/* Grid layout: 2 rows x 4 columns with row gap */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
         {recommendedBooksData.map((book, idx) => (
-          <BookCard key={idx} {...book} />
+          <BookCard key={idx} id={book.title.toLowerCase().replace(/\s+/g, "-")} {...book} />
         ))}
       </div>
       

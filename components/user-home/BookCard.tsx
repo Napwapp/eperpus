@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 interface BookCardProps {
+  id: string;
   title: string;
   author: string;
   cover: string;
@@ -14,6 +15,7 @@ interface BookCardProps {
 }
 
 export default function BookCard({
+  id,
   title,
   author,
   cover,
@@ -23,7 +25,7 @@ export default function BookCard({
   return (
     <Link 
       className="block bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
-      href={"/"}
+      href={`/detail-book/${id}/${title}`}
     >
       {/* Top Section - Full Width Image */}
       <div className="w-full aspect-[3/4] relative overflow-hidden">
@@ -52,14 +54,20 @@ export default function BookCard({
           {author}
         </p>
 
-        <p className="text-xs text-gray-600 mb-2 flex flex-row items-center">
-          <Calendar className="w-4 h-4 mr-1" /> <span>{release_date}</span>
+        <p className="text-xs text-gray-600 mb-2 flex flex-row items-center truncate">
+          <Calendar className="w-4 h-4 mr-1" /> <span className="truncate">{release_date}</span>
         </p>
               
         {/* Additional Info (Optional) */}
-        <div className="flex flex-row items-center text-xs text-gray-500">
-          <Book className="w-4 h-4 mr-1" /> <span className="mr-4">Tersedia</span>
-          <Star className="w-4 h-4 mr-1 text-yellow-500" /> <span>4.5</span>
+        <div className="flex flex-row items-center text-xs text-gray-500 min-w-0">
+          <div className="flex items-center min-w-0 flex-1">
+            <Book className="w-4 h-4 mr-1 flex-shrink-0" />
+            <span className="truncate mr-4">Tersedia</span>
+          </div>
+          <div className="flex items-center min-w-0 flex-shrink-0">
+            <Star className="w-4 h-4 mr-1 text-yellow-500 flex-shrink-0" />
+            <span className="truncate">4.5</span>
+          </div>
         </div>
       </div>
     </Link>
