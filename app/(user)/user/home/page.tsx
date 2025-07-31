@@ -1,15 +1,29 @@
 "use client";
 
-import {useEffect } from "react";
+import { useEffect, useState } from "react";
 import { showAlert } from "@/components/ui/toast";
 import { useSession } from "next-auth/react";
 import Header from "@/components/user-home/Header";
 import InformationCards from "@/components/user-home/InformationCards";
 import BorrowedBooks from "@/components/user-home/BorrowedBooks";
 import BooksRecomendations from "@/components/user-home/BooksRecomendations";
+import { useRouter, useSearchParams } from "next/navigation";
+import BaseAlert from "@/components/ui/base-alert";
 
 export default function HomePage() {
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [baseAlert, setBaseAlert] = useState(false);
+
+  useEffect(() => {
+    const unauthorized = searchParams.get("unauthorized");
+
+    if (unauthorized === "true") {
+      setBaseAlert(true);
+      router.replace("/user/home", { scroll: false });
+    }
+  }, [searchParams, router]);
 
   useEffect(() => {
     const successMessage = localStorage.getItem("successMessage");
@@ -23,7 +37,14 @@ export default function HomePage() {
     <div className="bg-gray-50 w-full overflow-hidden">
       {/* Header */}
       <Header />
-      
+      {baseAlert && (
+        <BaseAlert
+          type="error"
+          message="Maaf, kamu tidak memiliki akses untuk mengakses halaman tersebut"
+          autoClose
+          onClose={() => setBaseAlert(false)}
+        />
+      )}
       {/* Main Content */}
       <div className="space-y-4 sm:space-y-6 w-full">
         {/* Welcome */}

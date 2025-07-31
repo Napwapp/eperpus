@@ -8,7 +8,6 @@ export default function PageNotFound() {
   const router = useRouter();
 
   const handleGoBack = () => {
-    // Cek apakah ada history sebelumnya
     if (typeof window !== "undefined" && window.history.length > 1) {
       router.back();
     } else {

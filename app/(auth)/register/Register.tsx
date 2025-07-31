@@ -121,7 +121,7 @@ export default function Register() {
                     type="text"
                     placeholder="Nama lengkap"
                     error={errors.name?.message}
-                    {...register("name")}
+                    {...register("name")}                    
                   />
 
                   <label
@@ -134,7 +134,7 @@ export default function Register() {
                     type="email"
                     placeholder="Email"
                     error={errors.email?.message}
-                    {...register("email")}
+                    {...register("email")}                    
                   />
 
                   <label
@@ -147,7 +147,7 @@ export default function Register() {
                     type="password"
                     placeholder="Password"
                     error={errors.password?.message}
-                    {...register("password")}
+                    {...register("password")}                    
                   />
 
                   <label
@@ -160,7 +160,7 @@ export default function Register() {
                     type="tel"
                     placeholder="Nomor HP"
                     error={errors.nohp?.message}
-                    {...register("nohp")}
+                    {...register("nohp")}                    
                     onInput={handlePhoneInput}
                   />
 

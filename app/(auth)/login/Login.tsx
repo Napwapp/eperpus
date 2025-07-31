@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { showAlert } from "@/components/ui/toast";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { loginUserSchema } from "@/validations/userSchema";
 import { ArrowLeft } from "lucide-react";
@@ -15,7 +15,6 @@ import LoaderSpinner from "@/components/ui/loader-spinner";
 export default function Login() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -47,9 +46,11 @@ export default function Login() {
     }
   }, [router, searchParams]);
 
+  // submit login
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Validasi frontend
+
+    // Validasi
     try {
       loginUserSchema.parse({ email, password });
     } catch (error) {
@@ -65,25 +66,36 @@ export default function Login() {
       }
       return;
     }
-
+  
     setLoading(true);
-
+  
     const res = await signIn("credentials", {
       email,
       password,
       redirect: false,
     });
-
+  
     if (res?.error) {
       showAlert({ message: res.error, type: "error" });
-    } else {
-      sessionStorage.removeItem("unauthorized-alert-shown");
-      router.push("/user/home");
-      localStorage.setItem("successMessage", "Berhasil login!");
+      setLoading(false);
+      return;
     }
-
+  
+    // Tunggu sampai session tersedia
+    const session = await getSession();
+  
+    if (session?.user?.role === "admin" || session?.user?.role === "superadmin") {
+      router.push("/admin/dashboard");
+    } else {
+      router.push("/user/home");
+    }
+  
+    sessionStorage.removeItem("unauthorized-alert-shown");
+    localStorage.setItem("successMessage", "Berhasil login!");
+  
     setLoading(false);
   };
+  
 
   const handleGoogleLogin = async () => {
 
@@ -119,11 +131,11 @@ export default function Login() {
           duration={5000}
         />
       )}
-      <section className="bg-gray-1 min-h-screen flex items-center justify-center dark:bg-dark py-8 sm:py-20 lg:py-[120px]">
+      <section className="bg-gray-1 min-h-screen flex items-center justify-center py-8 sm:py-20 lg:py-[120px]">
         <div className="container mx-auto px-2 relative">
           <div className="flex justify-center items-center">
             <div className="w-full">
-              <div className="relative mx-auto w-full max-w-xs sm:max-w-md md:max-w-[525px] overflow-hidden rounded-lg bg-white px-4 sm:px-8 md:px-12 py-10 sm:py-16 dark:bg-dark-2">
+              <div className="relative mx-auto w-full max-w-xs sm:max-w-md md:max-w-[525px] overflow-hidden rounded-lg bg-white px-4 sm:px-8 md:px-12 py-10 sm:py-16">
                 <div className="mb-10 text-center md:mb-16">
                   <h1 className="text-2xl font-bold text-gray-700 mb-4">
                     Login ke akun Anda
@@ -158,7 +170,7 @@ export default function Login() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="w-full rounded-md border border-stroke bg-transparent px-5 py-3 text-base text-body-color outline-none focus:border-primary dark:border-dark-3 dark:text-white"
+                      className="w-full rounded-md border border-stroke bg-transparent px-5 py-3 text-base text-body-color outline-none focus:border-primary"
                     />
                   </div>
 
@@ -176,7 +188,7 @@ export default function Login() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      className="w-full rounded-md border border-stroke bg-transparent px-5 py-3 text-base text-body-color outline-none focus:border-primary dark:border-dark-3 dark:text-white"
+                      className="w-full rounded-md border border-stroke bg-transparent px-5 py-3 text-base text-body-color outline-none focus:border-primary"
                     />
                   </div>
 
@@ -198,7 +210,7 @@ export default function Login() {
                   </div>
                 </form>
 
-                <p className="mb-6 text-base text-secondary-color dark:text-dark-7 text-center">
+                <p className="mb-6 text-base text-secondary-color text-center">
                 Atau login dengan
                 </p>                                
 
