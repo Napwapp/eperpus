@@ -3,59 +3,116 @@
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import BookCard from "./BookCard";
+import { Kategori } from "@/lib/types/buku";
 
-// Dummy data untuk rekomendasi buku (8 buku untuk 2 baris x 4 grid)
-const recommendedBooksData = [
+interface BookCardProps {
+  id: number;
+  title: string;
+  author: string;
+  cover?: string | null;
+  categories: Kategori[];
+  release_date?: string | null;
+}
+
+const recommendedBooksData: BookCardProps[] = [
   {
+    id: 1,
+    cover: "/file.svg",
     title: "Sapiens",
     author: "Yuval Noah Harari",
-    cover: "/file.svg",
-    category: "History",
+    categories: [{ 
+      id: 1, 
+      books_id: 1, 
+      kategori: "History", 
+      createdAt: "2025-07-29T00:00:00.000Z", 
+      updatedAt: "2025-07-29T00:00:00.000Z" 
+    }],
     release_date: "2025-07-29",
   },
   {
+    id: 2,
+    cover: "/file.svg",
     title: "Filosofi Teras",
     author: "Henry Manampiring",
-    cover: "/file.svg",
-    category: "Self Improvement",
+    categories: [{ 
+      id: 2, 
+      books_id: 2, 
+      kategori: "Self Improvement", 
+      createdAt: "2025-07-29T00:00:00.000Z", 
+      updatedAt: "2025-07-29T00:00:00.000Z" 
+    }],
     release_date: "2025-07-29",
   },
   {
+    id: 3,
+    cover: "/file.svg",
     title: "Rich Dad Poor Dad",
     author: "Robert Kiyosaki",
-    cover: "/file.svg",
-    category: "Finance",
+    categories: [{ 
+      id: 3, 
+      books_id: 3, 
+      kategori: "Finance", 
+      createdAt: "2025-07-29T00:00:00.000Z", 
+      updatedAt: "2025-07-29T00:00:00.000Z" 
+    }],
     release_date: "2025-07-29",
   },
   {
+    id: 4,
+    cover: "/file.svg",
     title: "The Lean Startup",
     author: "Eric Ries",
-    cover: "/file.svg",
-    category: "Business",
+    categories: [{ 
+      id: 4, 
+      books_id: 4, 
+      kategori: "Business", 
+      createdAt: "2025-07-29T00:00:00.000Z", 
+      updatedAt: "2025-07-29T00:00:00.000Z" 
+    }],
     release_date: "2025-07-29",
   },
   {
+    id: 5,
+    cover: "/file.svg",
     title: "Thinking, Fast and Slow",
     author: "Daniel Kahneman",
-    cover: "/file.svg",
-    category: "Psychology",
+    categories: [{ 
+      id: 5, 
+      books_id: 5, 
+      kategori: "Psychology", 
+      createdAt: "2025-07-29T00:00:00.000Z", 
+      updatedAt: "2025-07-29T00:00:00.000Z" 
+    }],
     release_date: "2025-07-29",
   },
   {
+    id: 6,
+    cover: "/file.svg",
     title: "Negeri 5 Menara",
     author: "Ahmad Fuadi",
-    cover: "/file.svg",
-    category: "Novel",
+    categories: [{ 
+      id: 6, 
+      books_id: 6, 
+      kategori: "Novel", 
+      createdAt: "2025-07-29T00:00:00.000Z", 
+      updatedAt: "2025-07-29T00:00:00.000Z" 
+    }],
     release_date: "2025-07-29",
   },
   {
-    title: "Dilan 1990",
-    author: "Pidi Baiq",
+    id: 7,
     cover: "/file.svg",
-    category: "Novel",
+    title: "Bumi",
+    author: "Tere Liye",
+    categories: [{ 
+      id: 7, 
+      books_id: 7, 
+      kategori: "Novel", 
+      createdAt: "2025-07-29T00:00:00.000Z", 
+      updatedAt: "2025-07-29T00:00:00.000Z" 
+    }],
     release_date: "2025-07-29",
   },
-  { title: "Bumi", author: "Tere Liye", cover: "/file.svg", category: "Novel", release_date: "2025-07-29" },
 ];
 
 export default function BooksRecomendations() {
@@ -68,25 +125,27 @@ export default function BooksRecomendations() {
     <div className="space-y-6 mt-10">
       {/* Header */}
       <div className="text-left mb-10">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Rekomendasi untuk Anda</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Rekomendasi untuk Anda
+        </h2>
         <p className="text-gray-600">Berdasarkan minat membaca Anda</p>
       </div>
-      
-      {/* Grid layout: 2 rows x 4 columns with row gap */}
+
+      {/* Grid layout */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
-        {recommendedBooksData.map((book, idx) => (
-          <BookCard key={idx} id={book.title.toLowerCase().replace(/\s+/g, "-")} {...book} />
+        {recommendedBooksData.map((book) => (
+          <BookCard key={book.id} {...book} />
         ))}
       </div>
-      
+
       {/* Load More Button */}
       <div className="text-center">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="lg"
           onClick={handleLoadMore}
           className="flex items-center border-2 gap-2 mx-auto"
-        >          
+        >
           <ChevronDown className="h-4 w-4" />
           Muat Lebih Banyak
         </Button>

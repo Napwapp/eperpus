@@ -26,6 +26,14 @@ enum Gender {
   tidak_memilih
 }
 
+enum PinjamanStatus {
+  request
+  aktif
+  diperpanjang
+  menunggu_pengembalian
+  done
+}
+
 model users {
   id           String     @id @default(cuid())
   name         String
@@ -37,6 +45,7 @@ model users {
   role         Role       @default(user)
   gender       Gender     @default(tidak_memilih)
   otps         otps[]
+  pinjaman     pinjaman[]
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 }
@@ -49,5 +58,46 @@ model otps {
   user      users    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model buku {
+  id           Int        @id @default(autoincrement())
+  cover        String?
+  title        String
+  sinopsis     String
+  author       String
+  publisher    String?
+  release_date DateTime?
+  rak          String?
+  lokasi       String     @default("perpus sekolah")
+  stok         Int        @default(0)
+  categories   kategori[]
+  pinjaman     pinjaman[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model kategori {
+  id        Int      @id @default(autoincrement())
+  books_id  Int
+  kategori  String
+  buku      buku     @relation(fields: [books_id], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model pinjaman {
+  id                   Int            @id @default(autoincrement())
+  user_id              String
+  id_books             Int
+  status               PinjamanStatus @default(request)
+  tanggal_permintaan   DateTime       @default(now())
+  tanggal_dipinjam     DateTime?
+  tanggal_dikembalikan DateTime?
+  durasi_pinjaman      Int
+  user                 users          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  buku                 buku           @relation(fields: [id_books], references: [id], onDelete: Cascade)
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
 }
 
