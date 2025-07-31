@@ -1,8 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
+import booksReducer from './store/booksSlice'
 
 export const makeStore = () => {
   return configureStore({
-    reducer: {}
+    reducer: {
+      books: booksReducer,
+    }
   })
 }
 

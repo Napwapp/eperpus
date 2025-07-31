@@ -33,6 +33,11 @@ export const AdminLinks = [
     icon: LayoutDashboard,
   },
   {
+    title: "Data buku",
+    url: "/admin/data/buku",
+    icon: Book,
+  },
+  {
     title: "Data pinjaman",
     url: "/admin/data-pinjaman",
     icon: Book,
