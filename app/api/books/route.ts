@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validate required fields
-    if (!title || !sinopsis || !author || !lokasi || stok === undefined) {
+    if (!title || !sinopsis || !author || stok === undefined || !cover || !categories || !release_date ) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }

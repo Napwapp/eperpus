@@ -1,9 +1,20 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
 import { getBooks } from "@/lib/actions/books";
-import DataBukuForm from "@/components/admin/data-buku/DataBukuForm";
-import DataBukuTable from "@/components/admin/data-buku/DataBukuTable";
+import DataBukuTableWrapper from "@/components/admin/data-buku/DataBukuTableWrapper";
 
 export default async function DataBukuPage() {
-  const { books } = await getBooks();
+  const session = await getServerSession(authOptions);
+  
+  // Redirect jika bukan admin atau superadmin
+  if (!session?.user || (session.user.role !== "admin" && session.user.role !== "superadmin")) {
+    redirect("/");
+  }
+
+  // Ambil data buku
+  const { books, error } = await getBooks();
+  console.log(error);
 
   return (
     <div className="w-full p-6">
@@ -13,8 +24,7 @@ export default async function DataBukuPage() {
       </div>
       
       <div className="space-y-8">
-        <DataBukuForm />
-        <DataBukuTable books={books} />
+        <DataBukuTableWrapper initialBooks={books} />
       </div>
     </div>
   );
