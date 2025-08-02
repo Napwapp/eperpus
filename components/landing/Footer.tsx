@@ -1,17 +1,11 @@
 import Image from "next/image";
 import dayjs from "dayjs";
 import {
-  Instagram,
   Github,
-  Linkedin,
-  Phone,
 } from "lucide-react";
 
 const LinksMedsos = [
-  { name: "Instagram", icon: Instagram, href: "#" },
-  { name: "GitHub", icon: Github, href: "#" },
-  { name: "LinkedIn", icon: Linkedin, href: "#" },
-  { name: "Phone", icon: Phone, href: "#" },
+  { name: "GitHub", icon: Github, href: "https://github.com/Napwapp" },  
 ];
 
 const pages = [
@@ -21,17 +15,6 @@ const pages = [
   { name: "Layanan", href: "#layanan" },
 ];
 
-const resources = [
-  { name: "Blog", href: "#" },
-  { name: "FAQ", href: "#" },
-  { name: "Panduan", href: "#" },
-];
-
-const legal = [
-  { name: "Privacy Policy", href: "#" },
-  { name: "Terms of Service", href: "#" },
-  { name: "License", href: "#" },
-];
 
 export default function Footer() {
   return (
@@ -69,33 +52,7 @@ export default function Footer() {
                   </li>
                 ))}
               </ul>
-            </div>
-            {/* Resource */}
-            <div className="min-w-[150px] mb-8 lg:mb-0">
-              <h4 className="font-semibold text-md mb-3 text-gray-100">Resource</h4>
-              <ul className="space-y-2">
-                {resources.map((item) => (
-                  <li key={item.name}>
-                    <a href={item.href} className="text-gray-400 hover:text-violet-400 transition-colors text-sm">
-                      {item.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            {/* Legal */}
-            <div className="min-w-[150px]">
-              <h4 className="font-semibold text-md mb-3 text-gray-100">Legal</h4>
-              <ul className="space-y-2">
-                {legal.map((item) => (
-                  <li key={item.name}>
-                    <a href={item.href} className="text-gray-400 hover:text-violet-400 transition-colors text-sm">
-                      {item.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            </div>            
           </div>
         </div>
         {/* Bottom bar */}
@@ -104,9 +61,9 @@ export default function Footer() {
             &copy; {dayjs().year()} ePerpus. All rights reserved.
           </div>
           <div className="flex gap-4">
-            <a href="#" className="text-gray-400 hover:text-violet-400">Privacy Policy</a>
-            <a href="#" className="text-gray-400 hover:text-violet-400">Legal Notice</a>
-            <a href="#" className="text-gray-400 hover:text-violet-400">Terms of Service</a>
+            <p className="text-gray-400 hover:text-violet-400">Privacy Policy</p>
+            <p className="text-gray-400 hover:text-violet-400">Legal Notice</p>
+            <p className="text-gray-400 hover:text-violet-400">Terms of Service</p>
           </div>
         </div>
       </div>

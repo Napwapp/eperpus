@@ -10,7 +10,7 @@ const InputBox = React.memo(({
   placeholder, 
   name, 
   error,
-  className = "",
+  className = "text-gray-700",
   ...rest 
 }: InputBoxProps) => {
   return (
@@ -19,7 +19,7 @@ const InputBox = React.memo(({
         type={type}
         placeholder={placeholder}
         name={name}
-        className={`w-full rounded-md border border-stroke bg-transparent px-5 py-3 text-base text-body-color outline-none focus:border-violet-600 focus-visible:shadow-none dark:border-dark-3 dark:text-white ${className}`}
+        className={`w-full rounded-md border border-stroke bg-transparent px-5 py-3 text-base outline-none focus:border-violet-600 focus-visible:shadow-none ${className}`}
         {...rest}
       />
       {error && (

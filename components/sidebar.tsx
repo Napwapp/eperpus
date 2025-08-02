@@ -13,15 +13,11 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
-import { links } from "./nav-links";
+import { UserLinks, AdminLinks, baseLinks } from "./nav-links";
 import Link from "next/link";
 import clsx from "clsx";
 import Image from "next/image";
-import {
-  ChevronDown,
-  User,
-  LogOut,
-} from "lucide-react";
+import { ChevronDown, User, LogOut } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import {
   DropdownMenu,
@@ -38,6 +34,14 @@ export default function AppSidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const isMobile = useIsMobile();
+
+  const role = session?.user?.role;
+
+  const links = [
+    ...(role === "admin" ? AdminLinks : []),
+    ...(role === "user" ? UserLinks : []),
+    ...baseLinks,
+  ];
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/" });
@@ -104,7 +108,7 @@ export default function AppSidebar() {
               })}
             </SidebarMenu>
           </SidebarGroupContent>
-        </SidebarGroup>        
+        </SidebarGroup>
       </SidebarContent>
 
       {/* Footer */}
