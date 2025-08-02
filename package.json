@@ -69,16 +69,5 @@
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.5",
     "typescript": "^5"
-  },
-  "pnpm": {
-    "allowed-build-scripts": [
-      "@prisma/client",
-      "msw",
-      "prisma",
-      "sharp"
-    ],
-    "onlyBuiltDependencies": [
-      "bcrypt"
-    ]
   }
 }
