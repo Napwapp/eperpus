@@ -12,7 +12,7 @@ export default function Faq() {
           </AccordionItem>
           <AccordionItem value="item-2" className="border-gray-400">
             <AccordionTrigger className=" font-bold px-3 py-4 text-md text-violet-800">Bagaimana cara meminjam buku?</AccordionTrigger>
-            <AccordionContent className="px-3 text-gray-700">Untuk meminjam buku, Anda perlu melakukan registrasi terlebih dahulu. Setelah registrasi berhasil dan anda sudah memiliki akun, anda dapat meminjam buku pilihan kamu sesuai aturan dan ketentuan yang ada pada sistem kami.</AccordionContent>
+            <AccordionContent className="px-3 text-gray-700">Untuk meminjam buku, Anda perlu melakukan registrasi terlebih dahulu. Setelah registrasi berhasil dan anda sudah memiliki akun, anda dapat meminjam buku pilihan kamu yang tersedia sesuai aturan dan ketentuan yang ada pada sistem kami.</AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-3" className="border-gray-400">
             <AccordionTrigger className=" font-bold px-3 py-4 text-md text-violet-800">Bagaimana cara mengembalikan buku?</AccordionTrigger>
@@ -20,7 +20,7 @@ export default function Faq() {
           </AccordionItem>
           <AccordionItem value="item-4" className="border-gray-400">
             <AccordionTrigger className=" font-bold px-3 py-4 text-md text-violet-800">Berapa maksimal jangka waktu untuk meminjam buku?</AccordionTrigger>
-            <AccordionContent className="px-3 text-gray-700">Kamu dapat mengatur masa pinjam buku sesuai kebutuhan kamu. Namun maksimal jangka waktu untuk meminjam bukunya adalah 14 hari. Setelah itu, Anda doharuskan untuk mengembalikan buku tersebut ke perpustakaan.</AccordionContent>
+            <AccordionContent className="px-3 text-gray-700">Kamu dapat mengatur masa pinjam buku sesuai kebutuhan kamu. Namun maksimal jangka waktu untuk meminjam bukunya adalah 14 hari. Setelah itu, Anda diharuskan untuk mengembalikan buku tersebut ke perpustakaan.</AccordionContent>
           </AccordionItem>
         </Accordion>
       </div>

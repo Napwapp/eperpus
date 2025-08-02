@@ -1,9 +1,20 @@
 import { withAuth } from "next-auth/middleware";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { roleProtectionMiddleware } from "./middlewares/role-access";
 
 // Middleware untuk melindungi halaman user
 export default withAuth(
-  function middleware(req) {
+  async function middleware(req: NextRequest) {
+    const { pathname } = req.nextUrl;
+
+    if (pathname.startsWith("/admin")) {
+      return roleProtectionMiddleware(req, ["admin", "superadmin"]);
+    }
+
+    if (pathname.startsWith("/user")) {
+      return roleProtectionMiddleware(req, ["user", "admin", "superadmin"]);
+    }
+
     return NextResponse.next();
   },
   {
@@ -11,8 +22,7 @@ export default withAuth(
       authorized: ({ token }) => !!token,
     },
     pages: {
-      signIn: "/login?unauthorized=true",
-      signOut: "/",
+      signIn: "/login",
     },
   }
 );
@@ -20,5 +30,6 @@ export default withAuth(
 export const config = {
   matcher: [
     "/user/:path*",
-  ]
+    "/admin/:path*",
+  ],
 };

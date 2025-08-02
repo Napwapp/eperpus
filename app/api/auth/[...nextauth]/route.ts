@@ -15,23 +15,23 @@ declare module "next-auth" {
       id: string;
       email: string;
       name: string;
-      role: Role;      
-      nomorHp: string
-      alamat: string
-      gender: Gender;      
+      role: Role;
+      nomorHp: string;
+      alamat: string;
+      gender: Gender;
       createdAt: string;
       updatedAt: string;
     };
   }
 
-  interface User {
+  export interface User {
     id: string;
     email: string;
     name: string;
-    role: Role;    
-    nomorHp: string
-    alamat: string
-    gender: Gender;    
+    role: Role;
+    nomorHp: string;
+    alamat: string;
+    gender: Gender;
     createdAt: string;
     updatedAt: string;
   }
@@ -42,17 +42,17 @@ declare module "next-auth/jwt" {
     id: string;
     email: string;
     name: string;
-    role: Role;    
-    nomorHp: string
-    alamat: string
-    gender: Gender;    
+    role: Role;
+    nomorHp: string;
+    alamat: string;
+    gender: Gender;
     createdAt: string;
     updatedAt: string;
   }
 }
 
 export const authOptions: NextAuthOptions = {
-providers: [
+  providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
@@ -90,10 +90,9 @@ providers: [
             createdAt: user.createdAt.toISOString(),
             updatedAt: user.updatedAt.toISOString(),
           };
-          
+
           console.log("Authorize returning:", userData);
           return userData;
-          
         } catch (error) {
           if (error instanceof Error) {
             throw new Error(error.message);
@@ -105,9 +104,9 @@ providers: [
   ],
 
   session: { strategy: "jwt" },
-  pages: { 
+  pages: {
     signIn: "/login",
-    signOut: "/"
+    signOut: "/",
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
@@ -116,7 +115,9 @@ providers: [
       if (account?.provider === "google") {
         if (!user.email) throw new Error("No email from Google account");
 
-        const existingUser = await prisma.users.findUnique({ where: { email: user.email } });
+        const existingUser = await prisma.users.findUnique({
+          where: { email: user.email },
+        });
 
         if (!existingUser) {
           const newUser = await prisma.users.create({
@@ -133,7 +134,7 @@ providers: [
               updatedAt: new Date(),
             },
           });
-          
+
           // Update user object with proper data types
           user.id = newUser.id;
           user.createdAt = newUser.createdAt.toISOString();
@@ -147,7 +148,7 @@ providers: [
             where: { email: user.email },
             data: { verified_at: new Date() },
           });
-          
+
           // Update user object with existing user data
           user.id = existingUser.id;
           user.createdAt = existingUser.createdAt.toISOString();
@@ -166,11 +167,15 @@ providers: [
           user.alamat = existingUser.alamat || "";
           user.gender = existingUser.gender;
         }
+        
+        // Tambahkan role ke URL callback
+        const role = existingUser?.role || "user";
+        account.callbackUrl = `${account.callbackUrl}?role=${role}`;
       }
       return true;
     },
 
-    // Login 
+    // Login
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
@@ -185,7 +190,7 @@ providers: [
       }
       return token;
     },
-    
+
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id;
