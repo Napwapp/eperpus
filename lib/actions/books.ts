@@ -54,6 +54,7 @@ export async function getBookById(id: string) {
     // Convert Prisma Date objects to string format
     const formattedBook: Buku = {
       ...book,
+      stok: book.stok, // Pastikan field stok ada di model Prisma
       createdAt: book.createdAt.toISOString(),
       updatedAt: book.updatedAt.toISOString(),
       release_date: book.release_date?.toISOString() || null,

@@ -34,7 +34,7 @@ export default function AdminDashboard() {
         />
       )}
 
-      <div className="p-6 space-y-6 bg-white min-h-screen">
+      <div className="space-y-6 bg-white min-h-screen">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 mb-6">
             Dashboard Admin

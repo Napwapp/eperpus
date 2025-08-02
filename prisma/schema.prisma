@@ -32,6 +32,7 @@ enum PinjamanStatus {
   diperpanjang
   menunggu_pengembalian
   done
+  refused
 }
 
 model users {
@@ -95,6 +96,7 @@ model pinjaman {
   tanggal_dipinjam     DateTime?
   tanggal_dikembalikan DateTime?
   durasi_pinjaman      Int
+  alasan               String?
   user                 users          @relation(fields: [user_id], references: [id], onDelete: Cascade)
   buku                 buku           @relation(fields: [id_books], references: [id], onDelete: Cascade)
   createdAt            DateTime       @default(now())

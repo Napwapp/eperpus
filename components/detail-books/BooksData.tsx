@@ -1,6 +1,5 @@
 "use client";
 
-import { Star } from "lucide-react";
 import { Buku } from "@/lib/types/buku";
 import Categories from "./Categories";
 import { formatDateLong } from "@/lib/utils/dayjs";
@@ -47,13 +46,6 @@ export default function BooksData({ buku }: BooksDataProps) {
           <p className="text-lg text-gray-900">{buku.publisher}</p>
         </div>
       )}
-
-      {/* Rating */}
-      <div className="flex items-center gap-2">
-        <Star className="w-5 h-5 text-yellow-400 fill-current" />
-        <span className="text-lg font-medium text-gray-900">4.5</span>
-        <span className="text-sm text-gray-600">(128 ulasan)</span>
-      </div>
 
       {/* Informasi Stok */}
       <div className="flex items-center gap-4">

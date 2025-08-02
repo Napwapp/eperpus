@@ -140,6 +140,7 @@ export default function EditProfileSheet({ user }: EditProfileSheetProps) {
               placeholder="Email"
               className="mt-1"
               {...register("email")}
+              disabled
             />
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>

@@ -1,66 +1,86 @@
-import PinjamanCard from "./PinjamanCard";
-import { DataPinjaman } from "@/lib/types/pinjaman";
+"use client";
 
-// Data dummy untuk pinjaman
-const dummyPinjamanData: DataPinjaman[] = [
-  {
-    id: "1",
-    judul: "Laskar Pelangi",
-    sinopsis: "Novel karya Andrea Hirata yang menceritakan perjuangan anak-anak di Belitung untuk mendapatkan pendidikan. Cerita ini mengisahkan tentang sepuluh anak yang bersekolah di SD Muhammadiyah yang sangat sederhana dengan kondisi yang memprihatinkan. Meskipun dalam keterbatasan, mereka tetap semangat mengejar mimpi dan cita-cita mereka. Novel ini mengajarkan tentang pentingnya pendidikan, persahabatan, dan semangat pantang menyerah dalam menghadapi berbagai rintangan hidup.",
-    cover: "/cover/laskar-pelangi.jpg",
-    stok: 5,
-    tanggalPinjam: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 hari yang lalu
-    durasiPinjam: 7, // 7 hari
-    statusPinjaman: "aktif",
-  },
-  {
-    id: "2",
-    judul: "Bumi Manusia",
-    sinopsis: "Novel pertama dari tetralogi Buru karya Pramoedya Ananta Toer yang berlatar di era kolonial Belanda. Mengisahkan tentang Minke, seorang pribumi yang berjuang melawan ketidakadilan sistem kolonial. Novel ini menggambarkan perjuangan identitas, cinta, dan keadilan dalam konteks sejarah Indonesia. Cerita ini penuh dengan detail historis yang akurat dan menggambarkan kehidupan masyarakat Indonesia pada masa penjajahan dengan sangat mendalam.",
-    cover: "/cover/bumi-manusia.jpg",
-    stok: 3,
-    tanggalPinjam: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 hari yang lalu
-    durasiPinjam: 14, // 14 hari
-    statusPinjaman: "diperpanjang",
-  },
-  {
-    id: "3",
-    judul: "Perahu Kertas",
-    sinopsis: "Novel karya Dewi Lestari yang menceritakan kisah cinta antara Keenan dan Kugy. Cerita ini mengisahkan tentang perjalanan hidup dua orang yang berbeda karakter namun saling melengkapi. Novel ini menggambarkan tentang arti persahabatan, cinta, dan perjuangan dalam mencapai mimpi. Dengan gaya penulisan yang puitis dan mendalam, novel ini berhasil menggambarkan kompleksitas hubungan manusia dan berbagai emosi yang menyertainya.",
-    cover: "/cover/perahu-kertas.jpg",
-    stok: 8,
-    tanggalPinjam: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 hari yang lalu
-    durasiPinjam: 7, // 7 hari
-    statusPinjaman: "menunggu_pengembalian",
-  },
-  {
-    id: "4",
-    judul: "Ayat-Ayat Cinta",
-    sinopsis: "Novel karya Habiburrahman El Shirazy yang menceritakan tentang Fahri, seorang mahasiswa Indonesia yang belajar di Al-Azhar, Mesir. Novel ini mengisahkan tentang perjuangan Fahri dalam menghadapi berbagai tantangan hidup, termasuk masalah cinta dan keluarga. Cerita ini menggambarkan tentang nilai-nilai Islam, cinta, dan perjuangan dalam mencapai cita-cita. Novel ini berhasil menggabungkan unsur religius dengan cerita yang mengharukan dan inspiratif.",
-    cover: "/cover/ayat-ayat-cinta.jpg",
-    stok: 12,
-    tanggalPinjam: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // 15 hari yang lalu
-    durasiPinjam: 14, // 14 hari
-    statusPinjaman: "done",
-  },
-  {
-    id: "5",
-    judul: "Negeri 5 Menara",
-    sinopsis: "Novel karya Ahmad Fuadi yang menceritakan tentang perjalanan Alif dari kampung halamannya di Maninjau, Sumatera Barat, hingga menjadi mahasiswa di Pondok Modern Gontor. Novel ini mengisahkan tentang perjuangan Alif dalam mengejar pendidikan dan cita-citanya. Cerita ini menggambarkan tentang pentingnya pendidikan, persahabatan, dan semangat pantang menyerah. Novel ini penuh dengan inspirasi dan motivasi untuk terus berjuang mencapai mimpi.",
-    cover: "/cover/negeri-5-menara.jpg",
-    stok: 6,
-    tanggalPinjam: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 hari yang lalu
-    durasiPinjam: 10, // 10 hari
-    statusPinjaman: "aktif",
-  },
-];
+import { useAppSelector, useAppDispatch } from "@/lib/hooks";
+import { useEffect, useMemo, useState } from "react";
+import { fetchPinjamanUser } from "@/lib/features/pinjamanSlice";
+import type { Pinjaman } from "@/lib/types/pinjaman";
+import type { Buku } from "@/lib/types/buku";
+import PinjamanCard from "./PinjamanCard";
+import type { DataPinjaman } from "@/lib/types/pinjaman";
+import { useSession } from "next-auth/react";
+import { PinjamanListSkeleton } from "./PinjamanListSkeleton";
+import { Button } from "../ui/button";
+import { BookOpen } from "lucide-react";
 
 export default function PinjamanList() {
+  const { data: session } = useSession();
+  const dispatch = useAppDispatch();
+  const { pinjaman, error } = useAppSelector(
+    (state) => state.pinjaman
+  );
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+  useEffect(() => {
+    if (session) {
+      dispatch(fetchPinjamanUser()).finally(() => setIsInitialLoad(false));
+    }
+  }, [dispatch, session]);
+
+  // Mapping pinjaman ke DataPinjaman agar sesuai dengan PinjamanCard
+  const pinjamanData = useMemo(
+    () =>
+      pinjaman.map((p: Pinjaman) => {
+        const buku: Partial<Buku> = p.buku ?? {};
+        return {
+          id: String(p.id),
+          id_books: buku.id ?? 0,
+          judul: buku.title ?? "",
+          sinopsis: buku.sinopsis ?? "",
+          cover: buku.cover ?? "/file.svg",
+          stok: buku.stok ?? 0,
+          tanggalPinjam: p.tanggal_dipinjam
+            ? new Date(p.tanggal_dipinjam)
+            : new Date(),
+          durasiPinjam: p.durasi_pinjaman,
+          statusPinjaman: p.status as DataPinjaman["statusPinjaman"],
+        };
+      }),
+    [pinjaman]
+  );
+
+  if (isInitialLoad) {
+    return <PinjamanListSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center text-red-500 py-8">
+        Gagal memuat data: {error}
+        <Button
+          onClick={() => dispatch(fetchPinjamanUser())}
+          className="ml-2 px-3 py-1 bg-red-100 rounded-md text-red-600"
+        >
+          Coba Lagi
+        </Button>
+      </div>
+    );
+  }
+
+  // Jika pinjaman tidak ada
+  if (pinjamanData.length === 0) {
+    return (
+      <div className="text-center text-gray-500 py-8">
+        <BookOpen className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+        <p>Belum ada data pinjaman</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
-      {dummyPinjamanData.map((pinjaman) => (
+      {pinjamanData.map((pinjaman) => (
         <PinjamanCard key={pinjaman.id} data={pinjaman} />
       ))}
     </div>
   );
-} 
+}

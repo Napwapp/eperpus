@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { AlertTriangle } from "lucide-react"
 import { useIsMobile } from "@/hooks/use-mobile"
 
-type PinjamanStatus = "request" | "aktif" | "diperpanjang" | "menunggu_pengembalian" | "done"
+type PinjamanStatus = "request" | "aktif" | "diperpanjang" | "menunggu_pengembalian" | "done" | "refused"
 
 interface PinjamanTelatItemProps {
   pinjaman: {
@@ -24,7 +24,8 @@ const statusConfig = {
   aktif: { label: "Aktif", variant: "default" as const },
   diperpanjang: { label: "Diperpanjang", variant: "outline" as const },
   menunggu_pengembalian: { label: "Menunggu Pengembalian", variant: "destructive" as const },
-  done: { label: "Selesai", variant: "secondary" as const },
+  done: { label: "Selesai", variant: "success" as const },
+  refused: { label: "Ditolak", variant: "destructive" as const },
 }
 
 export function PinjamanTelatItem({ pinjaman }: PinjamanTelatItemProps) {

@@ -1,80 +1,100 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { PinjamanTelatItem } from "./pinjaman-telat/item"
+"use client";
 
-// Dummy data untuk pinjaman telat - tambahkan lebih banyak item
-const pinjamanTelatData = [
-  {
-    id: 5,
-    userName: "Andi Wijaya",
-    bukuTitle: "Advanced JavaScript Concepts",
-    status: "aktif" as const,
-    tanggalPinjam: "2023-12-20",
-    durasi: 14,
-    hariTelat: 12,
-  },
-  {
-    id: 6,
-    userName: "Rina Kartika",
-    bukuTitle: "Python for Data Science",
-    status: "diperpanjang" as const,
-    tanggalPinjam: "2023-12-25",
-    durasi: 21,
-    hariTelat: 8,
-  },
-  {
-    id: 7,
-    userName: "Dedi Kurniawan",
-    bukuTitle: "Mobile App Development",
-    status: "aktif" as const,
-    tanggalPinjam: "2024-01-01",
-    durasi: 14,
-    hariTelat: 5,
-  },
-  {
-    id: 8,
-    userName: "Lina Marlina",
-    bukuTitle: "DevOps Best Practices",
-    status: "aktif" as const,
-    tanggalPinjam: "2023-12-18",
-    durasi: 14,
-    hariTelat: 15,
-  },
-  {
-    id: 9,
-    userName: "Hendra Gunawan",
-    bukuTitle: "Blockchain Technology",
-    status: "diperpanjang" as const,
-    tanggalPinjam: "2023-12-22",
-    durasi: 21,
-    hariTelat: 10,
-  },
-  {
-    id: 10,
-    userName: "Sari Indah",
-    bukuTitle: "Digital Marketing Strategy",
-    status: "aktif" as const,
-    tanggalPinjam: "2023-12-28",
-    durasi: 14,
-    hariTelat: 6,
-  },
-]
+import { useEffect, useState } from "react";
+import dayjs from "@/lib/utils/dayjs";
+import type { Pinjaman } from "@/lib/types/pinjaman";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PinjamanTelatItem } from "./pinjaman-telat/item";
+import { PinjamanTelatSkeleton } from "./pinjaman-telat-skeleton";
+
+
+type PinjamanTelatMapped = {
+  id: number;
+  userName: string;
+  bukuTitle: string;
+  status:
+    | "request"
+    | "aktif"
+    | "diperpanjang"
+    | "menunggu_pengembalian"
+    | "done"
+    | "refused";
+  tanggalPinjam: string;
+  durasi: number;
+  hariTelat: number;
+};
 
 export function PinjamanTelat() {
+  const [pinjamanTelatData, setPinjamanTelatData] = useState<
+    PinjamanTelatMapped[]
+  >([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/pinjam-buku", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data: Pinjaman[]) => {
+        // Filter status menunggu_pengembalian
+        const telat = Array.isArray(data)
+          ? data.filter((p) => p.status === "menunggu_pengembalian")
+          : [];
+        // Map ke props yang dibutuhkan komponen item dan hitung hari telat
+        const mapped: PinjamanTelatMapped[] = telat.map((p) => {
+          const tanggalPinjam = p.tanggal_permintaan
+            ? dayjs(p.tanggal_permintaan)
+            : dayjs(p.createdAt);
+          const durasi = p.durasi_pinjaman;
+          const batasKembali = tanggalPinjam.add(durasi, "day");
+          const hariTelat = Math.max(dayjs().diff(batasKembali, "day"), 0);
+          return {
+            id: p.id,
+            userName: p.user?.name || "-",
+            bukuTitle: p.buku?.title || "-",
+            status: p.status,
+            tanggalPinjam: tanggalPinjam.toISOString(),
+            durasi,
+            hariTelat,
+          };
+        });
+        setPinjamanTelatData(mapped);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Gagal mengambil data pinjaman telat");
+        setLoading(false);
+      });
+  }, []);
+
+if (loading) {
+    return <PinjamanTelatSkeleton />
+  }
+
   return (
     <Card className="border-violet-200">
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-gray-800 flex items-center">
           Pinjaman telat
           <span className="ml-2 text-sm bg-red-100 text-red-600 px-2 py-1 rounded-full">
-            {pinjamanTelatData.length}
+            {loading ? "..." : pinjamanTelatData.length}
           </span>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-red-200 scrollbar-track-gray-100">
-        {pinjamanTelatData.map((pinjaman) => (
-          <PinjamanTelatItem key={pinjaman.id} pinjaman={pinjaman} />
-        ))}
+        {loading ? (
+          <div className="text-center text-gray-400">Loading...</div>
+        ) : error ? (
+          <div className="text-center text-red-500">{error}</div>
+        ) : pinjamanTelatData.length === 0 ? (
+          <div className="text-center text-gray-400">
+            Tidak ada pinjaman yang telat untuk saat ini
+          </div>
+        ) : (
+          pinjamanTelatData.map((pinjaman) => (
+            <PinjamanTelatItem key={pinjaman.id} pinjaman={pinjaman} />
+          ))
+        )}
       </CardContent>
     </Card>
-  )
+  );
 }

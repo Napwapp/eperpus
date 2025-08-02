@@ -3,6 +3,7 @@ import { Buku } from '@/lib/types/buku';
 
 interface BooksState {
   books: Buku[];
+  countBooks: number;
   loading: boolean;
   error: string | null;
   currentBook: Buku | null;
@@ -10,6 +11,7 @@ interface BooksState {
 
 const initialState: BooksState = {
   books: [],
+  countBooks: 0,
   loading: false,
   error: null,
   currentBook: null,
@@ -90,6 +92,7 @@ const booksSlice = createSlice({
       .addCase(fetchBooks.fulfilled, (state, action) => {
         state.loading = false;
         state.books = action.payload;
+        state.countBooks = action.payload.length;
       })
       .addCase(fetchBooks.rejected, (state, action) => {
         state.loading = false;
@@ -105,6 +108,7 @@ const booksSlice = createSlice({
       .addCase(addBook.fulfilled, (state, action) => {
         state.loading = false;
         state.books.unshift(action.payload); // Add to beginning
+        state.countBooks = state.books.length;
       })
       .addCase(addBook.rejected, (state, action) => {
         state.loading = false;

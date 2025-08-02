@@ -66,53 +66,57 @@ export default function Login() {
       }
       return;
     }
-  
+
     setLoading(true);
-  
+
     const res = await signIn("credentials", {
       email,
       password,
       redirect: false,
     });
-  
+
     if (res?.error) {
       showAlert({ message: res.error, type: "error" });
       setLoading(false);
       return;
     }
-  
+
     // Tunggu sampai session tersedia
     const session = await getSession();
-  
-    if (session?.user?.role === "admin" || session?.user?.role === "superadmin") {
+
+    if (
+      session?.user?.role === "admin" ||
+      session?.user?.role === "superadmin"
+    ) {
       router.push("/admin/dashboard");
     } else {
       router.push("/user/home");
     }
-  
+
     sessionStorage.removeItem("unauthorized-alert-shown");
     localStorage.setItem("successMessage", "Berhasil login!");
-  
+
     setLoading(false);
   };
-  
 
   const handleGoogleLogin = async () => {
-
     setIsLoadingGoogle(true);
-    const res = await signIn("google", {
-      callbackUrl: "/user/home", // arahkan ke dashboard setelah login berhasil
-    });
-    console.log(res, "Google sign-in response");
-    if (res?.error) {
-      showAlert({ message: res.error, type: "error" });
-      setIsLoadingGoogle(false);
-    } else {
-      router.push("/user/home"); // ganti ke halaman tujuanmu
+    try {
+      const res = await signIn("google", {
+        callbackUrl: "/auth/redirect", // route khusus untuk redirect
+      });
+
+      if (res?.error) {
+        showAlert({ message: res.error, type: "error" });
+        setIsLoadingGoogle(false);
+      }
+      // Biarkan NextAuth yang menangani redirect
+    } catch (error) {
+      console.error("Google login error:", error);
+      showAlert({ message: "Terjadi kesalahan saat login", type: "error" });
       setIsLoadingGoogle(false);
     }
   };
-
 
   return (
     <>
@@ -211,33 +215,33 @@ export default function Login() {
                 </form>
 
                 <p className="mb-6 text-base text-secondary-color text-center">
-                Atau login dengan
-                </p>                                
+                  Atau login dengan
+                </p>
 
                 <div className="mb-5">
-                    <button
-                      type="button"
-                      onClick={handleGoogleLogin}
-                      className="flex items-center justify-center bg-white w-full cursor-pointer rounded-md border-2 border-primary px-5 py-3 text-base font-medium text-black transition hover:bg-gray-100 disabled:opacity-50"
-                    >
-                      {/* svg Google */}
-                      <Image
-                        src="/google.svg"
-                        alt="Google"
-                        width={30}
-                        height={30}
-                        className="mr-2"
-                      />
-                      {isLoadingGoogle ? (
-                        <div className="flex items-center justify-center gap-2">
-                          <p className="ml-2">Loading</p>
-                          <LoaderSpinner />
-                        </div>
-                      ) : (
-                        "Sign In with Google"
-                      )}
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={handleGoogleLogin}
+                    className="flex items-center justify-center bg-white w-full cursor-pointer rounded-md border-2 border-primary px-5 py-3 text-base font-medium text-black transition hover:bg-gray-100 disabled:opacity-50"
+                  >
+                    {/* svg Google */}
+                    <Image
+                      src="/google.svg"
+                      alt="Google"
+                      width={30}
+                      height={30}
+                      className="mr-2"
+                    />
+                    {isLoadingGoogle ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <p className="ml-2">Loading</p>
+                        <LoaderSpinner />
+                      </div>
+                    ) : (
+                      "Sign In with Google"
+                    )}
+                  </button>
+                </div>
 
                 <div className="flex justify-between">
                   <p>
@@ -248,7 +252,7 @@ export default function Login() {
                       Belum punya akun? Daftar disini
                     </Link>
                   </p>
-                  
+
                   <Link
                     href="/reset-password"
                     className="mb-2 inline-block text-base text-violet-700 hover:text-violet-800 hover:underline hover:underline-offset-6"

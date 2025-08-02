@@ -9,16 +9,14 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          "bg-primary/10 text-primary border border-primary hover:bg-primary/20 focus-visible:ring-primary/20 dark:focus-visible:ring-primary/40",
-        secondary:
-          "birder-2 border-secondary bg-secondary/90 text-secondary-foreground [a&]:hover:bg-secondary/90",
+        default: "bg-primary/10 text-primary border border-primary hover:bg-primary/20 focus-visible:ring-primary/20",
+        secondary: "border-2 border-secondary bg-secondary/90 text-secondary-foreground hover:bg-secondary/90",
+        warning: "bg-yellow-500/10 text-yellow-600 border border-yellow-500 hover:bg-yellow-500/20 focus-visible:ring-yellow-500/20",
         destructive:
-          "bg-destructive/10 text-destructive border border-destructive hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
-        outline:
-          "bg-transparent text-foreground border border-border hover:bg-accent/10 hover:text-accent-foreground",
+          "bg-destructive/10 text-destructive border border-destructive hover:bg-destructive/20 focus-visible:ring-destructive/20",
+        outline: "bg-transparent text-foreground border border-border hover:bg-accent/10 hover:text-accent-foreground",
         success:
-          "bg-green-500/10 text-green-600 border border-green-500 hover:bg-green-500/20 focus-visible:ring-green-500/20 dark:focus-visible:ring-green-500/40",
+          "bg-green-500/10 text-green-600 border border-green-500 hover:bg-green-500/20 focus-visible:ring-green-500/20",
       },
       size: {
         default: "px-2 py-0.5 text-xs",
@@ -28,6 +26,7 @@ const badgeVariants = cva(
     },
     defaultVariants: {
       variant: "default",
+      size: "default",
     },
   }
 );

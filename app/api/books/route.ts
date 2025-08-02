@@ -8,31 +8,29 @@ const prisma = new PrismaClient();
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const search = searchParams.get('search') || '';
-    const category = searchParams.get('category') || '';
+    const page = parseInt(searchParams.get("page") || "1");
+    const MAX_LIMIT = 100;
+    const limit = Math.min(parseInt(searchParams.get("limit") || "10"),MAX_LIMIT);
+    const category = searchParams.get("category") || "";
 
     const skip = (page - 1) * limit;
 
     // buat where clause dengan tipe Prisma yang tepat
     const where: Prisma.bukuWhereInput = {};
-    
-    // jika ada pencarian
-    if (search) {
-      where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { author: { contains: search, mode: 'insensitive' } },
-        { sinopsis: { contains: search, mode: 'insensitive' } },
-      ];
-    }
 
     if (category) {
       where.categories = {
         some: {
-          kategori: { contains: category, mode: 'insensitive' }
-        }
+          kategori: { contains: category, mode: "insensitive" },
+        },
       };
+    }
+
+    if (page < 1 || limit < 1) {
+      return NextResponse.json(
+        { error: "page and limit must be positive integers" },
+        { status: 400 }
+      );
     }
 
     // Ambil data buku
@@ -45,7 +43,7 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit,
         orderBy: {
-          createdAt: 'desc',
+          createdAt: "desc",
         },
       }),
       prisma.buku.count({ where }),
@@ -67,17 +65,17 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}
 
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
-    if (!session?.user || (session.user.role !== "admin" && session.user.role !== "superadmin")) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+
+    if (
+      !session?.user ||
+      (session.user.role !== "admin" && session.user.role !== "superadmin")
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -91,11 +89,19 @@ export async function POST(request: NextRequest) {
       lokasi,
       stok,
       cover,
-      categories
+      categories,
     } = body;
 
     // Validate required fields
-    if (!title || !sinopsis || !author || stok === undefined || !cover || !categories || !release_date ) {
+    if (
+      !title ||
+      !sinopsis ||
+      !author ||
+      stok === undefined ||
+      !cover ||
+      !categories ||
+      !release_date
+    ) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -115,34 +121,34 @@ export async function POST(request: NextRequest) {
         stok: parseInt(stok),
         cover: cover || null,
         categories: {
-          create: categories?.map((category: string) => ({
-            kategori: category
-          })) || []
-        }
+          create:
+            categories?.map((category: string) => ({
+              kategori: category,
+            })) || [],
+        },
       },
       include: {
-        categories: true
-      }
+        categories: true,
+      },
     });
 
     return NextResponse.json(
-      { 
+      {
         message: "Buku berhasil ditambahkan",
         book: {
           ...book,
           createdAt: book.createdAt.toISOString(),
           updatedAt: book.updatedAt.toISOString(),
           release_date: book.release_date?.toISOString() || null,
-          categories: book.categories.map(category => ({
+          categories: book.categories.map((category) => ({
             ...category,
             createdAt: category.createdAt.toISOString(),
             updatedAt: category.updatedAt.toISOString(),
-          }))
-        }
+          })),
+        },
       },
       { status: 201 }
     );
-
   } catch (error) {
     console.error("Error creating book:", error);
     return NextResponse.json(
@@ -150,4 +156,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

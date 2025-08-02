@@ -27,7 +27,7 @@ export default function Categories({ categories }: CategoriesProps) {
         <Badge 
           key={category.id || index} 
           variant="secondary"
-          className="px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors"
+          className="px-3 py-1 text-sm font-medium bg-violet-100 border-2 border-violet-600 text-violet-800 hover:bg-violet-200 transition-colors"
         >
           {category.kategori}
         </Badge>

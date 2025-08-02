@@ -4,6 +4,10 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import BookCard from "./BookCard";
 import { Kategori } from "@/lib/types/buku";
+import { useAppSelector, useAppDispatch } from "@/lib/hooks";
+import { useEffect } from "react";
+import { fetchBooks } from "@/lib/features/booksSlice";
+import type { RootState } from "@/lib/store";
 
 interface BookCardProps {
   id: number;
@@ -14,111 +18,20 @@ interface BookCardProps {
   release_date?: string | null;
 }
 
-const recommendedBooksData: BookCardProps[] = [
-  {
-    id: 1,
-    cover: "/file.svg",
-    title: "Sapiens",
-    author: "Yuval Noah Harari",
-    categories: [{ 
-      id: 1, 
-      books_id: 1, 
-      kategori: "History", 
-      createdAt: "2025-07-29T00:00:00.000Z", 
-      updatedAt: "2025-07-29T00:00:00.000Z" 
-    }],
-    release_date: "2025-07-29",
-  },
-  {
-    id: 2,
-    cover: "/file.svg",
-    title: "Filosofi Teras",
-    author: "Henry Manampiring",
-    categories: [{ 
-      id: 2, 
-      books_id: 2, 
-      kategori: "Self Improvement", 
-      createdAt: "2025-07-29T00:00:00.000Z", 
-      updatedAt: "2025-07-29T00:00:00.000Z" 
-    }],
-    release_date: "2025-07-29",
-  },
-  {
-    id: 3,
-    cover: "/file.svg",
-    title: "Rich Dad Poor Dad",
-    author: "Robert Kiyosaki",
-    categories: [{ 
-      id: 3, 
-      books_id: 3, 
-      kategori: "Finance", 
-      createdAt: "2025-07-29T00:00:00.000Z", 
-      updatedAt: "2025-07-29T00:00:00.000Z" 
-    }],
-    release_date: "2025-07-29",
-  },
-  {
-    id: 4,
-    cover: "/file.svg",
-    title: "The Lean Startup",
-    author: "Eric Ries",
-    categories: [{ 
-      id: 4, 
-      books_id: 4, 
-      kategori: "Business", 
-      createdAt: "2025-07-29T00:00:00.000Z", 
-      updatedAt: "2025-07-29T00:00:00.000Z" 
-    }],
-    release_date: "2025-07-29",
-  },
-  {
-    id: 5,
-    cover: "/file.svg",
-    title: "Thinking, Fast and Slow",
-    author: "Daniel Kahneman",
-    categories: [{ 
-      id: 5, 
-      books_id: 5, 
-      kategori: "Psychology", 
-      createdAt: "2025-07-29T00:00:00.000Z", 
-      updatedAt: "2025-07-29T00:00:00.000Z" 
-    }],
-    release_date: "2025-07-29",
-  },
-  {
-    id: 6,
-    cover: "/file.svg",
-    title: "Negeri 5 Menara",
-    author: "Ahmad Fuadi",
-    categories: [{ 
-      id: 6, 
-      books_id: 6, 
-      kategori: "Novel", 
-      createdAt: "2025-07-29T00:00:00.000Z", 
-      updatedAt: "2025-07-29T00:00:00.000Z" 
-    }],
-    release_date: "2025-07-29",
-  },
-  {
-    id: 7,
-    cover: "/file.svg",
-    title: "Bumi",
-    author: "Tere Liye",
-    categories: [{ 
-      id: 7, 
-      books_id: 7, 
-      kategori: "Novel", 
-      createdAt: "2025-07-29T00:00:00.000Z", 
-      updatedAt: "2025-07-29T00:00:00.000Z" 
-    }],
-    release_date: "2025-07-29",
-  },
-];
+// ...dummy data dihapus, gunakan data dari redux
+
 
 export default function BooksRecomendations() {
+  const dispatch = useAppDispatch();
+  const { books, loading, error } = useAppSelector((state: RootState) => state.books);
+
+  useEffect(() => {
+    dispatch(fetchBooks());
+  }, [dispatch]);
+
   const handleLoadMore = () => {
     // TODO: Implement load more functionality
-    console.log("Load more books");
+    dispatch(fetchBooks()); // bisa tambahkan pagination nanti
   };
 
   return (
@@ -133,9 +46,17 @@ export default function BooksRecomendations() {
 
       {/* Grid layout */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
-        {recommendedBooksData.map((book) => (
-          <BookCard key={book.id} {...book} />
-        ))}
+        {loading ? (
+          <div className="col-span-4 text-center">Loading...</div>
+        ) : error ? (
+          <div className="col-span-4 text-center text-red-500">{error}</div>
+        ) : books.length > 0 ? (
+          books.slice(0, 10).map((book: BookCardProps) => (
+            <BookCard key={book.id} {...book} />
+          ))
+        ) : (
+          <div className="col-span-4 text-center">Tidak ada rekomendasi buku</div>
+        )}
       </div>
 
       {/* Load More Button */}

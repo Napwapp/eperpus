@@ -8,10 +8,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Calendar, BookOpen } from "lucide-react";
+import { showAlert } from "@/components/ui/toast";
 
 interface PinjamBukuForm {
   durasi_pinjaman: string;
-  alasan: string;
+  alasan: string | null;
 }
 
 interface CardPinjamBukuProps {
@@ -20,26 +21,66 @@ interface CardPinjamBukuProps {
   onSubmit?: (data: PinjamBukuForm) => void;
 }
 
-export default function CardPinjamBuku({ bukuId, bukuTitle, onSubmit }: CardPinjamBukuProps) {
+export default function CardPinjamBuku({
+  bukuId,
+  onSubmit,
+}: CardPinjamBukuProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm<PinjamBukuForm>();
 
   const onSubmitForm = async (data: PinjamBukuForm) => {
     setIsSubmitting(true);
     try {
+      // Validasi bukuId
+      if (!bukuId || isNaN(bukuId)) {
+        showAlert({ message: "ID buku tidak valid", type: "error" });
+        return;
+      }
+
+      const response = await fetch("/api/pinjam-buku", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          bukuId: bukuId,
+          durasi_pinjaman: data.durasi_pinjaman,
+          alasan: data.alasan || null,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        showAlert({
+          message: result.error || "Gagal mengirim permintaan pinjaman",
+          type: "error",
+        });
+        return;
+      }
+
+      showAlert({
+        message: "Permintaan pinjaman berhasil dikirim!",
+        type: "success",
+      });
+      reset();
+
+      // Call optional onSubmit callback
       if (onSubmit) {
         onSubmit(data);
       }
-      // Reset form after successful submission
-      reset();
     } catch (error) {
       console.error("Error submitting form:", error);
+      showAlert({
+        message: "Terjadi kesalahan saat mengirim permintaan",
+        type: "error",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -71,12 +112,12 @@ export default function CardPinjamBuku({ bukuId, bukuTitle, onSubmit }: CardPinj
                   required: "Durasi pinjaman wajib diisi",
                   min: {
                     value: 1,
-                    message: "Durasi minimal 1 hari"
+                    message: "Durasi minimal 1 hari",
                   },
                   max: {
-                    value: 30,
-                    message: "Durasi maksimal 30 hari"
-                  }
+                    value: 14,
+                    message: "Durasi maksimal 14 hari",
+                  },
                 })}
               />
             </div>
@@ -98,27 +139,20 @@ export default function CardPinjamBuku({ bukuId, bukuTitle, onSubmit }: CardPinj
               placeholder="Masukkan alasan kamu meminjam buku ini"
               className="min-h-[100px] resize-none"
               {...register("alasan", {
-                required: "Alasan meminjam wajib diisi",
-                minLength: {
-                  value: 10,
-                  message: "Alasan minimal 10 karakter"
-                }
+                maxLength: {
+                  value: 150,
+                  message: "Alasan maksimal 150 karakter",
+                },
               })}
             />
             {errors.alasan && (
-              <p className="text-sm text-red-600">
-                {errors.alasan.message}
-              </p>
+              <p className="text-sm text-red-600">{errors.alasan.message}</p>
             )}
             <p className="text-xs text-gray-500">*Optional</p>
           </div>
 
           {/* Submit Button */}
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isSubmitting}
-          >
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? "Mengirim..." : "Pinjam"}
           </Button>
         </form>

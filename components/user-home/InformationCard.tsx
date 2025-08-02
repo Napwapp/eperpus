@@ -9,7 +9,7 @@ interface InformationCardProps {
   subtitle: string;
   icon: LucideIcon;
   iconColor: string;
-  onClick?: () => void;
+  isLoading?: boolean;
 }
 
 export default function InformationCard({
@@ -18,12 +18,10 @@ export default function InformationCard({
   subtitle,
   icon: Icon,
   iconColor,
-  onClick
 }: InformationCardProps) {
   return (
     <Card 
-      className={`cursor-pointer transition-all duration-200 ${onClick ? 'hover:bg-gray-50' : ''}`}
-      onClick={onClick}
+      className={"cursor-pointer transition-all duration-200 hover:bg-gray-50"}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>

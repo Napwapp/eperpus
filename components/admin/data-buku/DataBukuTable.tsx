@@ -164,7 +164,7 @@ export default function DataBukuTable({ books = [], onBooksUpdate }: DataBukuTab
                       <td className="py-3 px-4 text-gray-600">
                         {book.release_date ? formatDate(book.release_date) : "-"}
                       </td>
-                      <td className="py-3 px-4 text-gray-600">{book.lokasi}</td>
+                      <td className="py-3 px-4 text-gray-600">{book.lokasi ? (book.lokasi) : "-" }</td>
                       <td className="py-3 px-4">
                         <Badge variant={book.stok > 0 ? "default" : "destructive"}>
                           {book.stok}
@@ -173,7 +173,7 @@ export default function DataBukuTable({ books = [], onBooksUpdate }: DataBukuTab
                       <td className="py-3 px-4">
                         <div className="flex flex-wrap gap-1">
                           {book.categories.slice(0, 2).map((category, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
+                            <Badge key={index} variant="secondary" className="text-xs border-2 border-violet-600 bg-violet-200 text-violet-600">
                               {category.kategori}
                             </Badge>
                           ))}

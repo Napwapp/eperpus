@@ -1,8 +1,4 @@
-"use client";
-
-import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Eye } from "lucide-react";
 import Image from "next/image"; 
 
 interface CoverBooksProps {
@@ -11,14 +7,10 @@ interface CoverBooksProps {
 }
 
 export default function CoverBooks({ cover, title }: CoverBooksProps) {
-  const [isHovered, setIsHovered] = useState(false);
-
   return (
     <div className="flex-shrink-0">
       <Card 
         className="relative w-full max-w-sm mx-auto overflow-hidden group cursor-pointer"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
       >
         <div className="aspect-[3/4] relative">
           {cover ? (
@@ -26,7 +18,7 @@ export default function CoverBooks({ cover, title }: CoverBooksProps) {
               src={cover}
               alt={`Cover buku ${title}`}
               fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className="object-cover transition-transform duration-300"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
@@ -38,17 +30,7 @@ export default function CoverBooks({ cover, title }: CoverBooksProps) {
                 <p className="text-sm">Tidak ada cover</p>
               </div>
             </div>
-          )}
-          
-          {/* Hover overlay */}
-          {isHovered && (
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center transition-opacity duration-300">
-              <div className="text-white text-center">
-                <Eye className="w-8 h-8 mx-auto mb-2" />
-                <p className="text-sm font-medium">Lihat Detail</p>
-              </div>
-            </div>
-          )}
+          )}                  
         </div>
       </Card>
     </div>

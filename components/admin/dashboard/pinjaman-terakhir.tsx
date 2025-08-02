@@ -1,76 +1,58 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PinjamanTerakhirItem } from "./pinjaman-terakhir/item"
+import { PinjamanMapped } from "@/lib/types/pinjaman"
+import { PinjamanTerakhirSkeleton } from "./pinjaman-terakhir-skeleton"
 
-// Dummy data
-const pinjamanTerakhirData = [
-  {
-    id: 1,
-    userName: "Ahmad Rizki",
-    bukuTitle: "Pemrograman Web dengan React",
-    status: "aktif" as const,
-    tanggalPinjam: "2024-01-15",
-    durasi: 14,
-  },
-  {
-    id: 2,
-    userName: "Siti Nurhaliza",
-    bukuTitle: "Database Management System",
-    status: "diperpanjang" as const,
-    tanggalPinjam: "2024-01-10",
-    durasi: 21,
-  },
-  {
-    id: 3,
-    userName: "Budi Santoso",
-    bukuTitle: "Machine Learning Fundamentals",
-    status: "menunggu_pengembalian" as const,
-    tanggalPinjam: "2024-01-20",
-    durasi: 7,
-  },
-  {
-    id: 4,
-    userName: "Maya Sari",
-    bukuTitle: "UI/UX Design Principles",
-    status: "request" as const,
-    tanggalPinjam: "2024-01-22",
-    durasi: 14,
-  },
-  {
-    id: 5,
-    userName: "Rudi Hermawan",
-    bukuTitle: "Cloud Computing Essentials",
-    status: "aktif" as const,
-    tanggalPinjam: "2024-01-18",
-    durasi: 10,
-  },
-  {
-    id: 6,
-    userName: "Dewi Lestari",
-    bukuTitle: "Cybersecurity Fundamentals",
-    status: "diperpanjang" as const,
-    tanggalPinjam: "2024-01-12",
-    durasi: 21,
-  },
-  {
-    id: 7,
-    userName: "Agus Setiawan",
-    bukuTitle: "Artificial Intelligence Basics",
-    status: "aktif" as const,
-    tanggalPinjam: "2024-01-25",
-    durasi: 14,
-  },
-]
 
 export function PinjamanTerakhir() {
+  const [pinjamanTerakhirData, setPinjamanTerakhirData] = useState<PinjamanMapped[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+    useEffect(() => {
+    fetch("/api/pinjam-buku", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data) => {
+        // Ambil 10 data terbaru
+        const latest = Array.isArray(data) ? data.slice(0, 10) : []
+        // Map ke props yang dibutuhkan komponen item
+        const mapped = latest.map((p) => ({
+          id: p.id,
+          userName: p.user?.name || "-",
+          bukuTitle: p.buku?.title || "-",
+          status: p.status,
+          tanggalPinjam: new Date(p.tanggal_permintaan), // ← sudah Date
+          durasi: p.durasi_pinjaman,
+        }))
+        setPinjamanTerakhirData(mapped)
+        setLoading(false)
+      })
+      .catch(() => {
+        setError("Gagal mengambil data pinjaman terakhir")
+        setLoading(false)
+      })
+  }, [])
+
+  if (loading) {
+    return <PinjamanTerakhirSkeleton />
+  }
+
   return (
     <Card className="border-violet-200">
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-gray-800">Pinjaman terakhir</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-violet-200 scrollbar-track-gray-100">
-        {pinjamanTerakhirData.map((pinjaman) => (
-          <PinjamanTerakhirItem key={pinjaman.id} pinjaman={pinjaman} />
-        ))}
+        {error ? (
+          <div className="text-center text-red-500 py-8">{error}</div>
+        ) : pinjamanTerakhirData.length === 0 ? (
+          <div className="text-center text-gray-400 py-8">Tidak ada data pinjaman untuk saat ini</div>
+        ) : (
+          pinjamanTerakhirData.map((pinjaman) => <PinjamanTerakhirItem key={pinjaman.id} pinjaman={pinjaman} />)
+        )}
       </CardContent>
     </Card>
   )

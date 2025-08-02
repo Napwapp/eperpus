@@ -39,7 +39,7 @@ export const AdminLinks = [
   },
   {
     title: "Data pinjaman",
-    url: "/admin/data-pinjaman",
+    url: "/admin/data/pinjaman",
     icon: Book,
   },
 ];

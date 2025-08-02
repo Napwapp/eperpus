@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useIsMobile } from "@/hooks/use-mobile"
 
-type PinjamanStatus = "request" | "aktif" | "diperpanjang" | "menunggu_pengembalian" | "done"
+type PinjamanStatus = "request" | "aktif" | "diperpanjang" | "menunggu_pengembalian" | "done" | "refused"
 
 interface PinjamanTerakhirItemProps {
   pinjaman: {
@@ -12,17 +12,18 @@ interface PinjamanTerakhirItemProps {
     userName: string
     bukuTitle: string
     status: PinjamanStatus
-    tanggalPinjam: string
+    tanggalPinjam: Date
     durasi: number
   }
 }
 
 const statusConfig = {
-  request: { label: "Request", variant: "secondary" as const },
-  aktif: { label: "Aktif", variant: "default" as const },
-  diperpanjang: { label: "Diperpanjang", variant: "outline" as const },
+  request: { label: "Request", variant: "warning" as const },
+  aktif: { label: "Aktif", variant: "success" as const },
+  diperpanjang: { label: "Diperpanjang", variant: "warning" as const },
   menunggu_pengembalian: { label: "Menunggu Pengembalian", variant: "destructive" as const },
-  done: { label: "Selesai", variant: "secondary" as const },
+  done: { label: "Selesai", variant: "success" as const },
+  refused: { label: "Ditolak", variant: "destructive" as const },
 }
 
 export function PinjamanTerakhirItem({ pinjaman }: PinjamanTerakhirItemProps) {

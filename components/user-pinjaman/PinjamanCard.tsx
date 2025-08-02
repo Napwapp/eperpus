@@ -7,6 +7,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DataPinjaman } from "@/lib/types/pinjaman";
 import dayjs from "@/lib/utils/dayjs";
+import Image from "next/image";
+import Link from "next/link";
 
 interface PinjamanCardProps {
   data: DataPinjaman;
@@ -30,12 +32,12 @@ export default function PinjamanCard({ data }: PinjamanCardProps) {
         setTimeLeft("Waktu habis");
         return;
       }
-      
+
       const duration = dayjs.duration(diff);
       const days = Math.floor(duration.asDays());
       const hours = duration.hours();
       const minutes = duration.minutes();
-      
+
       if (days > 0) {
         setTimeLeft(`${days} hari ${hours} jam`);
       } else if (hours > 0) {
@@ -51,16 +53,21 @@ export default function PinjamanCard({ data }: PinjamanCardProps) {
     return () => clearInterval(interval);
   }, [data.tanggalPinjam, data.durasiPinjam]);
 
+  // Status pinjaman
   const getStatusVariant = (status: string) => {
     switch (status) {
+      case "request":
+        return "warning";
       case "aktif":
-        return "default";
+        return "success";
       case "diperpanjang":
-        return "secondary";
+        return "warning";
       case "menunggu_pengembalian":
         return "destructive";
       case "done":
         return "success";
+      case "refused":
+        return "destructive";
       default:
         return "outline";
     }
@@ -68,6 +75,8 @@ export default function PinjamanCard({ data }: PinjamanCardProps) {
 
   const getStatusText = (status: string) => {
     switch (status) {
+      case "request":
+        return "Menunggu Persetujuan";
       case "aktif":
         return "Aktif";
       case "diperpanjang":
@@ -76,20 +85,36 @@ export default function PinjamanCard({ data }: PinjamanCardProps) {
         return "Menunggu Pengembalian";
       case "done":
         return "Selesai";
+      case "refused":
+        return "Ditolak";
       default:
         return status;
     }
   };
 
   return (
-    <Card className="w-full p-4 border border-gray-200 rounded-xl shadow-sm">
+    <Card className="w-full p-4 border border-gray-200 rounded-xl shadow-sm my-4">
       <div className="flex gap-4">
         {/* Cover Buku */}
-        <div className="flex-shrink-0">
-          <div className="w-20 h-24 bg-gray-200 rounded-sm border border-gray-300 flex items-center justify-center">
-            <BookOpen className="w-8 h-8 text-gray-400" />
+        <Link href={`/detail-book/${data.id_books}/${data.judul}`}>
+          <div className="flex-shrink-0 relative w-20 h-24">
+            {data.cover ? (
+              <Image
+                src={data.cover}
+                alt={`Cover ${data.judul}`}
+                fill
+                className="object-cover rounded-sm border border-gray-300"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "/file.svg";
+                }}
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-200 rounded-sm border border-gray-300 flex items-center justify-center">
+                <BookOpen className="w-8 h-8 text-gray-400" />
+              </div>
+            )}
           </div>
-        </div>
+        </Link>
 
         {/* Content */}
         <div className="flex-1 flex flex-col gap-2">
@@ -128,7 +153,11 @@ export default function PinjamanCard({ data }: PinjamanCardProps) {
             </div>
             <div className="flex items-center gap-1">
               <Clock className="w-4 h-4" />
-              <span>{timeLeft}</span>
+              {data.statusPinjaman === "done"
+                ? "Selesai"
+                : data.statusPinjaman === "refused"
+                ? "Tidak disetujui"
+                : timeLeft}
             </div>
           </div>
         </div>
