@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ChevronDown, ChevronUp, Clock, BookOpen } from "lucide-react";
+import { ChevronDown, ChevronUp, Clock, BookOpen, Trash2, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DataPinjaman } from "@/lib/types/pinjaman";
+import { useRouter } from "next/navigation";
+import { showAlert } from "../ui/toast";
 import dayjs from "@/lib/utils/dayjs";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,8 +17,39 @@ interface PinjamanCardProps {
 }
 
 export default function PinjamanCard({ data }: PinjamanCardProps) {
+  const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
   const [timeLeft, setTimeLeft] = useState<string>("");
+  const [isDeleting, setIsDeleting] = useState(false); // State untuk loading
+
+  // handleDelete
+    const handleDelete = async () => {
+    setIsDeleting(true); // Aktifkan loading state
+    try {
+      const response = await fetch(`/api/user/pinjaman/${data.id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Gagal menghapus pinjaman");
+      }
+
+      showAlert({ message: "Pinjaman berhasil dihapus", type: "success" });
+      router.refresh();
+    } catch (error) {
+      showAlert({
+        message: error instanceof Error ? error.message : "Terjadi kesalahan",
+        type: "error",
+      });
+      console.error("Delete error:", error);
+    } finally {
+      setIsDeleting(false); // Matikan loading state
+    }
+  };
 
   // Hitung mundur real-time
   useEffect(() => {
@@ -92,8 +125,26 @@ export default function PinjamanCard({ data }: PinjamanCardProps) {
     }
   };
 
+
   return (
-    <Card className="w-full p-4 border border-gray-200 rounded-xl shadow-sm my-4">
+    <Card className="w-full p-4 border border-gray-200 rounded-xl shadow-sm my-4 relative">
+      {/* Button delete */}
+      {data.statusPinjaman === "done" && (
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={handleDelete}
+          className="absolute bottom-2 right-2 p-2 h-8 w-8"
+          disabled={isDeleting} // Disable button saat loading
+        >
+          {isDeleting ? (
+            <Loader2 className="w-4 h-4 animate-spin" /> // Spinner saat loading
+          ) : (
+            <Trash2 className="w-4 h-4" /> // Icon trash normal
+          )}
+        </Button>
+      )}
+
       <div className="flex gap-4">
         {/* Cover Buku */}
         <Link href={`/detail-book/${data.id_books}/${data.judul}`}>

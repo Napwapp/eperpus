@@ -20,6 +20,7 @@ export interface Pinjaman {
   tanggal_dikembalikan?: Date;
   durasi_pinjaman: number;
   alasan: string | null;
+  isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
   user?: {

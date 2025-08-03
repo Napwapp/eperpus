@@ -16,6 +16,7 @@ export async function GET() {
     const pinjaman = await prisma.pinjaman.findMany({
       where: {
         user: { email: session.user.email },
+        isDeleted: false
       },
       include: {
         buku: {

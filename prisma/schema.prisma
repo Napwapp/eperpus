@@ -97,6 +97,7 @@ model pinjaman {
   tanggal_dikembalikan DateTime?
   durasi_pinjaman      Int
   alasan               String?
+  isDeleted            Boolean        @default(false) // Tambahan field untuk soft delete
   user                 users          @relation(fields: [user_id], references: [id], onDelete: Cascade)
   buku                 buku           @relation(fields: [id_books], references: [id], onDelete: Cascade)
   createdAt            DateTime       @default(now())
