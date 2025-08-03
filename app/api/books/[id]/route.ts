@@ -7,13 +7,9 @@ import { authOptions } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
-interface RouteParams {
-  id: string
-}
-
 export async function GET(
   request: NextRequest,
-  { params }: { params: RouteParams },
+  { params }: { params: { id: string } }
 ) {
   try {
     const bookId = Number.parseInt(params.id, 10)
@@ -47,7 +43,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: RouteParams },
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -111,7 +107,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: RouteParams },
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
