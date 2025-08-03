@@ -10,8 +10,27 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  // Ignore specific directories
+  {
+    ignores: [
+      "**/node_modules/**",
+      "**/.next/**",
+      "**/dist/**",
+      "**/out/**",
+      "**/lib/generated/**"
+    ]
+  },  
   ...compat.extends("next/core-web-vitals", "next/typescript"),
-  
+
+  // File dependency rules
+  {
+    files: ["node_modules/**", "lib/generated/**"],
+    rules: {
+      "@typescript-eslint/no-var-requires": "off",
+      "no-undef": "off",
+      "no-unused-vars": "off"
+    }
+  }
 ];
 
 export default eslintConfig;
