@@ -9,7 +9,7 @@ pnpm add next-cloudinary
 
 ### 2. Konfigurasi Environment Variables
 
-Buat file `.env.local` di root project dan tambahkan:
+di file `.env` di root project dan tambahkan:
 
 ```env
 # Cloudinary Configuration

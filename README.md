@@ -265,6 +265,7 @@ pnpm run dev
 ## Struktur proyek
 > Mungkin masih ada yang tidak terbawa atau tidak sesuai.
 
+```
 eperpus/
 │
 ├── app/                                 # Routing dan halaman utama aplikasi
@@ -414,6 +415,7 @@ eperpus/
 ├── CLOUDINARY_SETUP.md                  # Panduan setup Cloudinary
 ├── TYPE_FIXES.md                        # Catatan perbaikan tipe data
 └── ...file dan folder lain
+```
 
 ## Deployment
 Proyek ini sudah dideploy menggunakan vercel. Jika berminat bisa kunjungi [https://eperpus.vercel.app/](https://eperpus.vercel.app/)
