@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import Header from "@/components/user-home/Header";
 import BooksGrid from "@/components/user-books/BooksGrid";
 import AddBookButton from "@/components/user-books/AddBookButton";

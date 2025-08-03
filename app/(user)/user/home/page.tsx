@@ -8,7 +8,6 @@ import InformationCards from "@/components/user-home/InformationCards";
 import BorrowedBooks from "@/components/user-home/BorrowedBooks";
 import { useRouter, useSearchParams } from "next/navigation";
 import BaseAlert from "@/components/ui/base-alert";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export default function HomePage() {
   const { data: session } = useSession();

@@ -35,9 +35,9 @@ export default function BorrowedBook({
         <p className="text-sm text-gray-600 truncate">{author}</p>
         <div className="flex flex-col gap-2 mt-2">
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-            <Badge variant={daysLeft <= 7 ? "destructive" : "warning"} className="w-fit">
+            <Badge variant={daysLeft <= 3 ? "destructive" : "warning"} className="w-fit">
               <Clock className="h-3 w-3 mr-1" />
-              {daysLeft} hari lagiw
+              {daysLeft} hari lagi
             </Badge>
             <span className="text-xs text-gray-500">
               Dikembalikan: {new Date(dueDate).toLocaleDateString('id-ID')}

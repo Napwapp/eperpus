@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 import { BukuSectionSkeleton } from "./BukuSkeletons";
-import Link from "next/link";
 
 export default function BukuSection() {
   const dispatch = useAppDispatch();

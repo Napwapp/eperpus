@@ -4,7 +4,7 @@ import BooksData from "./BooksData";
 import CardPinjamBuku from "./CardPinjamBuku";
 import { getBookById } from "@/lib/actions/books";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import clsx from "clsx";
 
 
