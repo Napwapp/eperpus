@@ -38,7 +38,7 @@ export default function AppSidebar() {
   const role = session?.user?.role;
 
   const links = [
-    ...(role === "admin" ? AdminLinks : []),
+    ...(role === "admin" || "superadmin" ? AdminLinks : []),
     ...(role === "user" ? UserLinks : []),
     ...baseLinks,
   ];

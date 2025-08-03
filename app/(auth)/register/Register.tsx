@@ -85,11 +85,11 @@ export default function Register() {
     <>
       <BackButton />
 
-      <section className="bg-gray-1 min-h-screen flex items-center justify-center dark:bg-dark py-8 sm:py-20 lg:py-[120px]">
+      <section className="bg-gray-1 min-h-screen flex items-center justify-center">
         <div className="container mx-auto px-2 rounded-md">
           <div className="flex justify-center items-center">
             <div className="w-full">
-              <div className="relative mx-auto w-full max-w-xs sm:max-w-md md:max-w-[525px] overflow-hidden rounded-lg bg-white px-4 sm:px-8 md:px-12 py-10 sm:py-16 dark:bg-dark-2">
+              <div className="relative mx-auto w-full max-w-xs sm:max-w-md md:max-w-[525px] overflow-hidden rounded-lg bg-white px-4 sm:px-8 md:px-12 py-10 sm:py-16">
                 <div className="mb-10 text-center md:mb-12">
                   <h1 className="text-2xl font-bold text-gray-700 mb-4">
                     Daftar Akun Baru
@@ -173,7 +173,7 @@ export default function Register() {
                   <div className="mb-4">
                     <textarea
                       placeholder="Alamat lengkap"
-                      className="w-full rounded-md border border-stroke bg-transparent px-5 py-3 text-base text-body-color outline-none focus:border-violet-600 focus-visible:shadow-none dark:border-dark-3 dark:text-white"
+                      className="w-full rounded-md border border-stroke bg-transparent px-5 py-3 text-base text-body-color outline-none focus:border-violet-600 focus-visible:shadow-none text-gray-700"
                       rows={2}
                       {...register("alamat")}
                     />
