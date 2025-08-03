@@ -12,7 +12,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "./status-badge";
 import Image from "next/image";
-import { Check, X, BookCheck } from "lucide-react";
+import { Check, X, BookCheck, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -29,10 +29,31 @@ import { showAlert } from "@/components/ui/toast";
 import type { Pinjaman } from "@/lib/types/pinjaman";
 import dayjs from "@/lib/utils/dayjs";
 import { DataPinjamanTableSkeleton } from "./TableSkeleton";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function DataPinjamanTable() {
   const [pinjamanData, setPinjamanData] = useState<Pinjaman[]>([]);
+  const [filteredData, setFilteredData] = useState<Pinjaman[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+
+  // Status options for filter
+  const statusOptions = [
+    { value: "all", label: "Semua Status" },
+    { value: "request", label: "Permintaan" },
+    { value: "aktif", label: "aktif" },
+    { value: "menunggu_pengembalian", label: "Telat" },
+    { value: "done", label: "Selesai" },
+    { value: "refused", label: "Ditolak" },
+  ];
 
   // Fetch data pinjaman
   const fetchPinjamanData = async () => {
@@ -43,6 +64,7 @@ export function DataPinjamanTable() {
       }
       const data = await response.json();
       setPinjamanData(data);
+      setFilteredData(data);
     } catch (error) {
       console.error("Error fetching pinjaman data:", error);
       showAlert({ message: "Gagal memuat data pinjaman", type: "error" });
@@ -50,6 +72,32 @@ export function DataPinjamanTable() {
       setLoading(false);
     }
   };
+
+  // Filter data based on search term and status
+  useEffect(() => {
+    let filtered = pinjamanData;
+
+    // Apply search filter
+    if (searchTerm.trim() !== "") {
+      filtered = filtered.filter((pinjaman) => {
+        const bookTitle = pinjaman.buku?.title?.toLowerCase() || '';
+        const userName = pinjaman.user?.name?.toLowerCase() || '';
+        const searchLower = searchTerm.toLowerCase();
+        
+        return (
+          bookTitle.includes(searchLower) ||
+          userName.includes(searchLower)
+        );
+      });
+    }
+
+    // Apply status filter
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((pinjaman) => pinjaman.status === statusFilter);
+    }
+
+    setFilteredData(filtered);
+  }, [searchTerm, statusFilter, pinjamanData]);
 
   // Auto-check overdue pinjaman
   useEffect(() => {
@@ -102,7 +150,7 @@ export function DataPinjamanTable() {
         return;
       }
       showAlert({ message: "Pinjaman berhasil disetujui", type: "success" });
-      fetchPinjamanData(); // Refresh data
+      fetchPinjamanData();
     } catch (error) {
       console.error("Error approving pinjaman:", error);
       showAlert({
@@ -131,7 +179,7 @@ export function DataPinjamanTable() {
         return;
       }
       showAlert({ message: "Pinjaman ditolak!", type: "success" });
-      fetchPinjamanData(); // Refresh data
+      fetchPinjamanData();
     } catch (error) {
       console.error("Error rejecting pinjaman:", error);
       showAlert({
@@ -159,7 +207,7 @@ export function DataPinjamanTable() {
         return;
       }
       showAlert({ message: "Pinjaman diselesaikan!", type: "success" });
-      fetchPinjamanData(); // Refresh data
+      fetchPinjamanData();
     } catch (error) {
       console.error("Error completing pinjaman:", error);
       showAlert({
@@ -169,10 +217,10 @@ export function DataPinjamanTable() {
     }
   };
 
-  const hasRequestStatus = pinjamanData.some(
+  const hasRequestStatus = filteredData.some(
     (pinjaman) => pinjaman.status === "request"
   );
-  const hasNonRequestStatus = pinjamanData.some(
+  const hasNonRequestStatus = filteredData.some(
     (pinjaman) =>
       pinjaman.status !== "request" &&
       pinjaman.status !== "refused" &&
@@ -185,11 +233,41 @@ export function DataPinjamanTable() {
 
   return (
     <Card className="border-violet-200">
-      <CardHeader>
+      <CardHeader className="flex flex-col gap-4">
         <CardTitle className="text-lg font-semibold text-gray-800">
           Daftar Pinjaman Buku
         </CardTitle>
+        
+        <div className="flex flex-col sm:flex-row gap-3 w-full">
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Cari judul atau peminjam..."
+              className="pl-9 focus-visible:ring-violet-600"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          
+          <Select
+            value={statusFilter}
+            onValueChange={(value) => setStatusFilter(value)}
+          >
+            <SelectTrigger className="w-full sm:w-56 focus:ring-violet-600">
+              <SelectValue placeholder="Filter Status" />
+            </SelectTrigger>
+            <SelectContent>
+              {statusOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </CardHeader>
+      
       <CardContent>
         <div className="overflow-x-auto">
           <Table>
@@ -218,17 +296,19 @@ export function DataPinjamanTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {pinjamanData.length === 0 ? (
+              {filteredData.length === 0 ? (
                 <TableRow>
                   <TableCell
                     colSpan={11}
                     className="text-center py-8 text-gray-500"
                   >
-                    Tidak ada data pinjaman
+                    {searchTerm || statusFilter !== "all" 
+                      ? "Tidak ditemukan data yang cocok" 
+                      : "Tidak ada data pinjaman"}
                   </TableCell>
                 </TableRow>
               ) : (
-                pinjamanData.map((pinjaman) => (
+                filteredData.map((pinjaman) => (
                   <TableRow key={pinjaman.id} className="hover:bg-violet-50/50">
                     <TableCell className="text-center font-medium">
                       {pinjaman.id}
@@ -276,7 +356,7 @@ export function DataPinjamanTable() {
                         : "-"}
                     </TableCell>
                     <TableCell className="text-center text-sm text-gray-600">
-                      {pinjaman.isDeleted ? "Dihapus" : "Aktif"}
+                      {pinjaman.isDeleted ? "Dihapus" : "Masih Aktif"}
                     </TableCell>
                     {hasRequestStatus && (
                       <TableCell className="text-center">
