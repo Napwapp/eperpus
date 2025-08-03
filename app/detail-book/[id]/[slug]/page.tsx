@@ -4,11 +4,12 @@ import DetailBookAsync from "@/components/detail-books/DetailBookAsync";
 import DetailBookSkeleton from "@/components/skeletons/DetailBookSkeleton";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 
+// Perbaikan tipe params menggunakan Promise
 interface DetailBookPageProps {
-  params: {
+  params: Promise<{
     id: string;
     slug: string;
-  };
+  }>;
 }
 
 function ErrorFallback() {
@@ -20,14 +21,20 @@ function ErrorFallback() {
   );
 }
 
-export default function DetailBookPage({ params }: DetailBookPageProps) {
+// Tambahkan async dan await untuk params
+export default async function DetailBookPage({ params }: DetailBookPageProps) {
+  // Await the params promise to get the actual values
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
+
   return (
     <div className="min-h-screen bg-gray-50">      
       <DetailBookHeader />
       <div className="container mx-auto px-4 py-8">
         <ErrorBoundary fallback={<ErrorFallback />}>
           <Suspense fallback={<DetailBookSkeleton />}>
-            <DetailBookAsync id={params.id} />
+            {/* Kirim id yang sudah di-resolve */}
+            <DetailBookAsync id={id} />
           </Suspense>
         </ErrorBoundary>
       </div>
