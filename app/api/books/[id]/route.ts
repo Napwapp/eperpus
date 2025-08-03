@@ -7,12 +7,16 @@ import { authOptions } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
+interface RouteParams {
+  id: string
+}
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: RouteParams },
 ) {
   try {
-    const bookId = parseInt(params.id);
+    const bookId = Number.parseInt(params.id, 10)
 
     // Jika id buku bukan nomer
     if (isNaN(bookId)) {
@@ -43,7 +47,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: RouteParams },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -56,7 +60,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const bookId = parseInt(params.id);
+    const bookId = Number.parseInt(params.id, 10)
     if (isNaN(bookId)) {
       return NextResponse.json({ error: "Invalid book ID" }, { status: 400 });
     }
@@ -107,7 +111,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: RouteParams },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -120,7 +124,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const bookId = parseInt(params.id);
+    const bookId = Number.parseInt(params.id, 10)
     if (isNaN(bookId)) {
       return NextResponse.json({ error: "Invalid book ID" }, { status: 400 });
     }
