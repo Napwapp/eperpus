@@ -43,3 +43,21 @@ export const AdminLinks = [
     icon: Book,
   },
 ];
+
+export const SuperAdminLinks = [
+  {
+    title: "Dashboard",
+    url: "/admin/dashboard",
+    icon: LayoutDashboard,
+  },
+  {
+    title: "Data buku",
+    url: "/admin/data/buku",
+    icon: Book,
+  },
+  {
+    title: "Data pinjaman",
+    url: "/admin/data/pinjaman",
+    icon: Book,
+  },
+]

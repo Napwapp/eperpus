@@ -13,7 +13,7 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
-import { UserLinks, AdminLinks, baseLinks } from "./nav-links";
+import { UserLinks, AdminLinks, baseLinks, SuperAdminLinks } from "./nav-links";
 import Link from "next/link";
 import clsx from "clsx";
 import Image from "next/image";
@@ -38,8 +38,9 @@ export default function AppSidebar() {
   const role = session?.user?.role;
 
   const links = [
-    ...(role === "admin" || "superadmin" ? AdminLinks : []),
+    ...(role === "admin" ? AdminLinks : []),
     ...(role === "user" ? UserLinks : []),
+    ...(role === "superadmin" ? SuperAdminLinks : []),
     ...baseLinks,
   ];
 
